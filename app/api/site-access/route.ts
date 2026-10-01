@@ -9,7 +9,6 @@ export async function POST(request:Request){
  const body=await request.json().catch(()=>null);
  if(body?.password!=='1337')return NextResponse.json({error:'Incorrect password'},{status:401});
  const token=accessToken();
- if(!token)return NextResponse.json({error:'Please try again shortly.'},{status:503});
  const response=NextResponse.json({ok:true});
  response.cookies.set(accessCookie,token,{httpOnly:true,sameSite:'lax',secure:production||url.protocol==='https:',path:'/',...(production?{domain:'.haus.fun'}:{})});
  return response;

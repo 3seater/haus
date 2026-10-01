@@ -3,7 +3,6 @@ html:has(.site-entry){overflow-y:auto;background:#191919}
 .site-entry-inner{width:min(100%,320px);transform:translateY(-20px)}
 .site-entry-logo{display:flex;align-items:center;justify-content:center;gap:13px;margin-bottom:48px}
 .site-entry-logo svg{width:62px;height:60px}
-.site-entry-logo span{font-family:var(--sans);font-size:60px;line-height:1;font-weight:700;letter-spacing:-4px}
 .site-entry-field{display:flex;align-items:center;gap:8px;border:1px solid #65535d;border-radius:8px;padding:6px;background:#ffffff03;transition:border-color .15s}
 .site-entry-field:focus-within{border-color:#efaccf}
 .site-entry-field input{min-width:0;flex:1;width:100%;background:transparent;border:0;outline:none;color:#f4f0e9;font-size:14px;padding:12px}

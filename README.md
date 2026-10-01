@@ -51,6 +51,6 @@ The launch buttons open the native HAUS token form. Live submission remains gate
 - Local project homepage: `http://localhost:3100/`; token app: `http://localhost:3100/app`.
 - Production homepage: `https://haus.fun`; app: `https://app.haus.fun`. Both hosts should point to this same Next.js deployment. Middleware serves `/app` at the app host's root; no second project is required.
 - Register both custom domains with the hosting provider, configure its required DNS records and HTTPS, and set `APP_ORIGIN=https://app.haus.fun` for app API writes. DNS and hosting have not been changed by the local implementation.
-- Keep one `SITE_ACCESS_SECRET` across both hosts. The preview password session uses an HttpOnly `.haus.fun` cookie in production, so Open app does not require a second password. Local cookies remain host-only. This entry gate does not replace API wallet authorization.
+- The cosmetic preview gate accepts `1337` and remembers entry with a `.haus.fun` cookie across production hosts. It requires no secret or environment variable. Local cookies remain host-only. This is a UI gate, not a security boundary; API actions still require wallet authorization.
 - Old `/?coin=...` and `/?view=...` links redirect to the app with their query parameters preserved. The app has no promotional hero; its first section is Explore.
 - Homepage descriptions distinguish the working discovery/studio tools from planned launches, vault execution and binding votes. Update that copy when the release gates are actually lifted.

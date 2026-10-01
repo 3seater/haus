@@ -1,0 +1,38 @@
+import { z } from 'zod';
+import { route, origin, json } from '@/lib/http';
+import { live, HttpError } from '@/lib/config';
+import { metadata } from '@/lib/ipfs';
+import { createLaunch } from '@/lib/pump';
+import { saveLaunch } from '@/lib/launch-store';
+import { rateLimit } from '@/lib/redis';
+import {rpc} from '@/lib/solana';
+import {createHash} from 'node:crypto';
+import {launchIntent,consumeLaunchProof} from '@/lib/launch-access';
+import {redis} from '@/lib/redis';
+import {Transaction} from '@solana/web3.js';
+export const runtime = 'nodejs';
+export const POST = route(async request => {
+  origin(request); live('LAUNCHES_ENABLED');
+  if(await rpc().getGenesisHash()!=='5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpKuc147dw2N9d')throw new HttpError(503,'Launch RPC is not on Solana mainnet.');
+  if(process.env.NEXT_PUBLIC_SOLANA_NETWORK!=='mainnet-beta')throw new HttpError(503,'Wallet network configuration is not ready.');
+  if (Number(request.headers.get('content-length')) > 5_000_000) throw new HttpError(413,'Upload too large.');
+  const form = await request.formData();
+  const fields=Object.fromEntries(form);
+  const proof=z.object({challengeId:z.string().uuid(),signature:z.string().min(1).max(128)}).parse(fields);
+  const input = launchIntent.omit({imageHash:true}).parse(fields);
+  await rateLimit(`launch:${input.wallet}`,3,600);
+  const image = form.get('image');
+  if (!(image instanceof File) || image.size > 4_000_000 || image.size < 8) throw new HttpError(400,'Choose a PNG, JPEG, or WebP image under 4 MB.');
+  const bytes = new Uint8Array(await image.arrayBuffer());
+  const png = bytes[0]===137 && bytes[1]===80 && bytes[2]===78 && bytes[3]===71;
+  const jpg = bytes[0]===255 && bytes[1]===216 && bytes[2]===255;
+  const webp = new TextDecoder().decode(bytes.slice(0,4))==='RIFF' && new TextDecoder().decode(bytes.slice(8,12))==='WEBP';
+  if (!(png || jpg || webp)) throw new HttpError(400,'Unsupported image format.');
+  await consumeLaunchProof({...input,imageHash:createHash('sha256').update(bytes).digest('hex')},proof.challengeId,proof.signature);
+  const uploaded = await metadata(image,input.name,input.symbol,input.description);
+  const {mintSignerEncrypted,...launch} = await createLaunch(input.wallet,input.name,input.symbol,uploaded.uri,input.initialBuySol);
+  await saveLaunch({status:'PENDING',mintAddress:launch.mint,name:input.name,symbol:input.symbol,description:input.description,imageUrl:uploaded.imageUrl,metadataUri:uploaded.uri,creatorWallet:input.wallet});
+  await redis().set(`prepared-launch:${launch.mint}`,JSON.stringify({message:Transaction.from(Buffer.from(launch.transaction,'base64')).serializeMessage().toString('base64'),mintSignerEncrypted}),'EX',86400);
+  return json(launch);
+});
+

@@ -1,0 +1,15 @@
+@font-face{font-family:'HAUS SMEGS';src:url('/fonts/HVSMEGS-Style1.otf') format('opentype');font-weight:400;font-style:normal;font-display:swap}
+:root{--wordmark:'HAUS SMEGS',var(--sans)}
+.brand>span,.site-entry-logo>span{font-family:var(--wordmark);font-weight:400;font-synthesis:none;letter-spacing:0;line-height:1.1}
+
+
+.site-entry-logo>span{font-size:76px}
+header .brand>span,footer .brand>span{font-family:var(--display);font-weight:400;font-synthesis:none;letter-spacing:-.03em;line-height:1;text-transform:uppercase}
+
+
+
+.home-site .home-hero h1>.hero-second-line{display:block;position:relative;color:inherit;white-space:nowrap}
+.home-site .home-hero .hero-haus-word{font-family:var(--wordmark);font-weight:400;font-synthesis:none;letter-spacing:-.06em;line-height:1;position:absolute;left:3.05em;top:-.1em;color:#be4b86;font-size:1.05em;text-transform:none;transform:rotate(-7deg) scale(1.45);transform-origin:15% 65%;z-index:1}
+:root[data-theme=dark] .home-site .home-hero .hero-haus-word{color:var(--dm-accent)}
+@media(max-width:750px){.home-site .home-hero h1{font-size:clamp(52px,9.4vw,78px)}}
+.home-hero-section .home-hero h1{font-size:clamp(58px,6vw,92px)} @media(max-width:750px){.home-hero-section .home-hero h1{font-size:clamp(46px,9.4vw,70px)}}

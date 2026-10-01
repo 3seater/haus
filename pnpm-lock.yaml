@@ -11,6 +11,9 @@ importers:
 
   .:
     dependencies:
+      '@next/env':
+        specifier: 15.5.25
+        version: 15.5.25
       '@coral-xyz/anchor':
         specifier: ^0.31.1
         version: 0.31.1(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@6.0.6)

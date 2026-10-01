@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {parseCandles,parseTrades,formatPrice} from '../lib/chart-data';
+import {parseCandles,parseTrades,formatPrice,formatChartPrice} from '../lib/chart-data';
 test('Candles are chronological, deduplicated and invalid OHLC values are omitted',()=>{
  const candles=parseCandles([[200,2,3,1,2.5,10],[100,1,2,.5,1.5,5],[200,2,4,1,3,20],[300,5,3,1,2,1],[400,2,3,1,2,-10],[500,NaN,3,1,2,1]]);
  assert.deepEqual(candles.map(c=>c.time),[100,200]);assert.equal(candles[1].close,3);assert.deepEqual(parseCandles(null),[]);
@@ -14,4 +14,13 @@ test('Trade direction is derived from requested token rather than pool base side
 });
 test('Small token prices retain meaningful precision',()=>{
  assert.equal(formatPrice(null),'—');assert.equal(formatPrice(0),'$0');assert.equal(formatPrice(.0000000321),'$0.0000000321');
+});
+
+
+test('Chart price labels suppress zero noise and stay bounded when scaling',()=>{
+ assert.equal(formatChartPrice(-1.6941e-21),'$0');
+ assert.equal(formatChartPrice(1.6941e-21),'$0');
+ assert.equal(formatChartPrice(0.00003705),'$0.00003705');
+ assert.equal(formatChartPrice(-0.000001),'$-0.000001');
+ assert.ok(formatChartPrice(1e15).length<15);
 });

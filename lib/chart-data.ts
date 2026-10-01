@@ -15,3 +15,13 @@ export function parseTrades(rows:unknown,mint:string):Trade[]{
 }
 export function formatPrice(value:number|null){if(value===null||!Number.isFinite(value))return '—';if(value===0)return '$0';return '$'+value.toLocaleString('en-US',{maximumSignificantDigits:5});}
 export function compactAmount(value:number){return new Intl.NumberFormat('en-US',{notation:'compact',maximumFractionDigits:2}).format(value);}
+
+
+// Match the chart tick precision so near-zero floating-point noise cannot widen its axis.
+export function formatChartPrice(value:number){
+ if(!Number.isFinite(value))return "—";
+ const rounded=Number(value.toFixed(12));
+ if(rounded===0)return "$0";
+ if(Math.abs(rounded)>=1e6)return "$"+new Intl.NumberFormat("en-US",{notation:"compact",maximumFractionDigits:2}).format(rounded);
+ return formatPrice(rounded);
+}

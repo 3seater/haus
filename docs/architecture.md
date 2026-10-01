@@ -1,5 +1,7 @@
 # HAUS production architecture — initial decisions
 
+**Scope update:** the user has now requested per-token creator-fee vaults, holder-governed allocations and claimable SOL rewards. The earlier personal-wallet fee-recipient scope below is superseded. See [vault-release.md](./vault-release.md) for current implementation, trust assumptions and deployment blockers. The vault contract compiles and passes local-validator checks but is not deployed; buy-and-burn remains unimplemented. Docker is repaired and Perks RPC/Redis settings are reused with HAUS isolation. DEX fulfillment is deferred by the user.
+
 Date: 2026-09-30. This document describes planned services and contracts, not deployed infrastructure. The initial delivery prioritizes branding, interface, and locally reviewable behavior.
 
 Local implementation update: the Haus workspace now keeps chat beside all tools, with a mobile chat dock. `/api/haus` implements single-use signed challenges, 15-minute mint-scoped in-memory bearer sessions, and a fresh mainnet holding check before every message/site pitch. Public reads are ungated. Atomic local files retain room content; this is only suitable for one server process. Eligibility is any positive unfrozen token balance, not top-20 ranking or voting weight. The production recommendations below (database, HttpOnly sessions, distributed rate limits, moderation, historical voting snapshots) remain outstanding. DEX escrow, binding votes, AI generation, asset uploads and hosted subdomains have not been implemented.

@@ -1,0 +1,18 @@
+html:has(.site-entry){overflow-y:auto;background:#191919}
+.site-entry{min-height:100svh;display:grid;place-items:center;background:#191919;color:#efaccf;padding:24px}
+.site-entry-inner{width:min(100%,320px);transform:translateY(-20px)}
+.site-entry-logo{display:flex;align-items:center;justify-content:center;gap:13px;margin-bottom:48px}
+.site-entry-logo svg{width:62px;height:60px}
+.site-entry-logo span{font-family:var(--sans);font-size:60px;line-height:1;font-weight:700;letter-spacing:-4px}
+.site-entry-field{display:flex;align-items:center;gap:8px;border:1px solid #65535d;border-radius:8px;padding:6px;background:#ffffff03;transition:border-color .15s}
+.site-entry-field:focus-within{border-color:#efaccf}
+.site-entry-field input{min-width:0;flex:1;width:100%;background:transparent;border:0;outline:none;color:#f4f0e9;font-size:14px;padding:12px}
+.site-entry-field input:focus{outline:none}
+.site-entry-field input::placeholder{color:#a899a1}
+.site-entry-field button{width:42px;height:42px;display:grid;place-items:center;background:#efaccf;color:#191919;border-radius:5px;flex-shrink:0}
+.site-entry-field button:hover{background:#f5c3de}
+.site-entry-field button:disabled{opacity:.5}
+.site-entry-error{height:28px;padding-top:10px;font-size:12px;text-align:center;color:#efaccf}
+.entry-loader{width:15px;height:15px;border:2px solid #19191944;border-top-color:#191919;border-radius:50%;animation:entry-spin .7s linear infinite}
+@keyframes entry-spin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.entry-loader{animation:none}}

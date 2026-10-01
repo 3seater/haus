@@ -1,0 +1,12 @@
+.hero-product{position:relative;isolation:isolate;width:100%;min-width:0;--mark-x:0px;--mark-y:0px}
+.hero-product-art{position:absolute;inset:-95px -75px -45px -25px;z-index:-1;pointer-events:none;overflow:hidden}
+.hero-product-art svg{width:110%;height:100%;fill:none;stroke:#bd4c8724;stroke-width:.65;transform:translate(var(--mark-x),var(--mark-y)) rotate(-8deg);transition:transform .7s cubic-bezier(.2,.7,.3,1)}
+.hero-product-stage{position:relative}
+.hero-product-controls{display:flex;align-items:center;justify-content:center;gap:7px;margin-top:18px}
+.hero-product-controls button{font-size:11px;color:#77716c;padding:8px 12px;border-radius:5px}
+.hero-product-controls button[aria-pressed=true]{background:#191919;color:#f4f0e9}
+.hero-product-controls button:hover{color:#a74778}
+.hero-product-controls button[aria-pressed=true]:hover{color:#efa9ce}
+.hero-product-play{display:grid;place-items:center;border-left:1px solid #d1ccc5!important;border-radius:0!important;margin-left:5px}
+@media(max-width:600px){.hero-product-art{inset:-35px -20px 0}.hero-product-controls{margin-top:12px}}
+@media(prefers-reduced-motion:reduce){.hero-product-art svg{transform:rotate(-8deg);transition:none}}

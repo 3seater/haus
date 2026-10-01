@@ -1,0 +1,52 @@
+/* A restrained shared shape system for the HAUS interface. */
+/* Keep the themed scrollbar track present on short and long pages alike. */
+html{overflow-y:scroll;scrollbar-gutter:auto}
+/* Radix locks body scrolling, but our root scrollbar remains visible.
+   Its default gap compensation would reserve that same space twice. */
+html body[data-scroll-locked]{margin-right:0!important;padding-right:0!important;--removed-body-scroll-bar-size:0px!important}
+/* Native scrolling, styled to match the dark navigation. */
+html{scrollbar-color:#555 #191919}
+::-webkit-scrollbar{width:12px;height:12px}
+::-webkit-scrollbar-track{background:#191919}
+::-webkit-scrollbar-thumb{background:#555;border:3px solid #191919;border-radius:8px}
+::-webkit-scrollbar-thumb:hover{background:#777}
+::-webkit-scrollbar-corner{background:#191919}
+@media(forced-colors:active){html{scrollbar-color:auto}}
+:root{--radius-control:6px;--radius-panel:9px;--radius-detail:4px}
+.button,.icon-button,.pill,.vote-button,
+input,textarea,select,
+.wallet-adapter-button.wallet-adapter-button-trigger,
+.searchbox,.refresh-markets,.sort-trigger,
+.asset-switch button,.amount-presets button,
+.studio-meme button,.studio-device-toggle button,
+.haus-tabs button,.market-tables [role=tab]{border-radius:var(--radius-control)}
+.layout-toggle,.studio-section-tabs,.chart-intervals{border-radius:var(--radius-control)}
+.layout-toggle button,.studio-section-tabs button,.chart-intervals button,
+.chart-intervals button.active,.coin-age,.floating-tag{border-radius:var(--radius-detail)}
+.hero-panel,.coin-art-wrap,.studio-invite,.surface,.empty-state,
+.proposal-card,.chat-panel,.tiny-site,.studio,.blueprint-manifesto,
+.onboard-art,.launch-image-field,.upload-field,.launch-image-preview,
+.market-chart,.trade-box,.community-cta,.community-build,
+.community-link-panel,.community-services,.how-grid article,.market-tables,
+.haus-room,.haus-welcome,.haus-tool-grid>button,.haus-funding,
+.haus-dex-profile,.haus-pitch,.haus-site-editor,.haus-site-canvas,
+.studio-controls,.studio-template-grid button,.studio-identity-image,
+.studio-upload,.studio-meme,.studio-font-specimen,
+.notice,.toast,.wallet-error-toast,.haus-notice,.modal-content{border-radius:var(--radius-panel)}
+.token-heading>.token-art,.community-header>.token-art{border-radius:var(--radius-control)}
+.template-swatch{border-radius:var(--radius-detail)}
+.migration-track{border-radius:var(--radius-detail)}
+/* Clip artwork and chart children without clipping menus or focus rings. */
+.market-chart,.coin-art-wrap,.hero-panel,.studio-identity-image{overflow:hidden}
+.haus-room-header{border-radius:8px 8px 0 0}
+.haus-composer{border-radius:0 0 8px 8px}
+.chat-collapsed .haus-room-header{border-radius:8px}
+.haus-canvas-label{border-radius:8px 8px 0 0}
+.haus-site-canvas>.studio-preview{border-radius:0 0 8px 8px}
+.haus-site-controls input,.haus-site-controls textarea,.docs-search,.docs-quick-links button{border-radius:var(--radius-control)}
+.haus-empty,.haus-pitches article{border-radius:var(--radius-panel)}
+
+/* Modal surfaces stay flat against their dimmed backdrop. */
+.modal-content,.haus-tour,.wallet-adapter-modal-wrapper{box-shadow:none}
+
+.view-explore>.explore-section{padding-top:0;margin-top:0}

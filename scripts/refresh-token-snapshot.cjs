@@ -22,7 +22,7 @@ async function main(){
   const progress=pump.complete?100:typeof pump.real_token_reserves==='number'?Math.max(0,Math.min(100,100*(1-pump.real_token_reserves/793100000000000))):null;
   return {mint,name:pump.name,symbol:pump.symbol,imageUrl:pair.info?.imageUrl||imageProxy||pump.image_uri,description:pump.description||'',marketCap:pair.marketCap??null,change:pair.priceChange?.h24??null,volume:pair.volume.h24,createdAt:new Date(pump.created_timestamp).toISOString(),progress,graduated:pump.complete===true,realTokenReserves:pump.real_token_reserves??null,holders:pump.holder_count??null,pumpUpdatedAt:pump.updated_at??null,pumpUrl:`https://pump.fun/coin/${mint}`,marketUrl:pair.url};
  }));
- await fs.writeFile(path.join(__dirname,'../lib/token-snapshot.json'),JSON.stringify({capturedAt,tokens},null,2)+'\n');
+ await fs.writeFile(path.join(__dirname,'../tests/fixtures/token-snapshot.json'),JSON.stringify({capturedAt,tokens},null,2)+'\n');
  console.log(JSON.stringify(tokens.map(({mint,name,symbol,marketCap,progress,graduated,imageUrl})=>({mint,name,symbol,marketCap,progress,graduated,imageUrl})),null,2));
 }
 main().catch(e=>{console.error(e.message);process.exitCode=1;});

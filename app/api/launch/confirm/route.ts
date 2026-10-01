@@ -6,12 +6,16 @@ import { verifyLaunch } from '@/lib/pump';
 import {rpc} from '@/lib/solana';
 import {redis} from '@/lib/redis';
 import {decrypt} from '@/lib/crypto';
-import {Message} from '@solana/web3.js';
+import {VersionedMessage} from '@solana/web3.js';
 export const POST = route(async request => {
-  origin(request); live('LAUNCHES_ENABLED');
+  // Confirmation/recovery remains available when NEW launches are disabled.
+  origin(request);
   const input = z.object({mint:z.string().min(32).max(44),signature:z.string().min(64).max(90)}).parse(await request.json());
   const token = await readLaunch(input.mint);
   if (!token) throw new HttpError(404,'Launch not found.');
+  const submittedRaw=await redis().get(`submitted-launch:${input.mint}`);
+  const submitted=submittedRaw?decrypt<{signature:string}>(submittedRaw):null;
+  if((submitted&&submitted.signature!==input.signature)||(token.launchSignature&&token.launchSignature!==input.signature))throw new HttpError(403,'Transaction does not match this launch.');
   const status=(await rpc().getSignatureStatuses([input.signature],{searchTransactionHistory:true})).value[0];
   if(status?.err)return json({status:'failed',error:'The transaction failed on Solana. You can start a new launch.'},409);
   if(status?.confirmationStatus!=='finalized'){
@@ -19,7 +23,7 @@ export const POST = route(async request => {
     const receipt=raw?decrypt<{signature:string;blockhash:string;transaction:string}>(raw):null;
     if(receipt&&receipt.signature!==input.signature)throw new HttpError(403,'Transaction does not match this launch.');
     const preparedRaw=await redis().get(`prepared-launch:${input.mint}`);
-    const blockhash=receipt?.blockhash||(preparedRaw?Message.from(Buffer.from(JSON.parse(preparedRaw).message,'base64')).recentBlockhash:null);
+    const blockhash=receipt?.blockhash||(preparedRaw?VersionedMessage.deserialize(Buffer.from(JSON.parse(preparedRaw).message,'base64')).recentBlockhash:null);
     if(!status&&blockhash&&!(await rpc().isBlockhashValid(blockhash,{commitment:'confirmed'})).value){
       // Re-read after the expiry check to avoid racing a transaction that just landed.
       const latest=(await rpc().getSignatureStatuses([input.signature],{searchTransactionHistory:true})).value[0];
@@ -31,7 +35,7 @@ export const POST = route(async request => {
     return json({status:'pending',error:'Waiting for Solana confirmation.'},409);
   }
   const verified = await verifyLaunch(input.mint,token.creatorWallet,input.signature,token);
-  await saveLaunch({...token,status:'ACTIVE',launchSignature:input.signature,launchSlot:verified.slot,totalSupply:verified.supply});
+  await saveLaunch({...token,status:'ACTIVE',launchSignature:input.signature,launchSlot:verified.slot,totalSupply:verified.supply,createdAt:verified.createdAt});
   return json({mint:input.mint,status:'ACTIVE',signature:input.signature});
 });
 

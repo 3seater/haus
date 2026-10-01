@@ -1,11 +1,12 @@
 import {NextRequest,NextResponse} from 'next/server';
-import {coins} from '@/lib/haus-data';
+import {registeredCoin} from '@/lib/token-registry';
 import {cachedFeed,rpc} from '@/lib/public-feed';
 import type {Holder} from '@/lib/chart-data';
 export const dynamic='force-dynamic';
 export async function GET(request:NextRequest){
- const mint=request.nextUrl.searchParams.get('mint');if(!coins.some(c=>c.mint===mint))return NextResponse.json({error:'Unknown token'},{status:400});
+ const mint=request.nextUrl.searchParams.get('mint');
  try{
+  if(!await registeredCoin(mint))return NextResponse.json({error:'Unknown token'},{status:400});
   const data=await cachedFeed(`holders:${mint}`,120000,async()=>{
    const [largest,supply]=await Promise.all([rpc('getTokenLargestAccounts',[mint,{commitment:'confirmed'}]),rpc('getTokenSupply',[mint,{commitment:'confirmed'}])]);
    const accounts=largest.value as {address:string;amount:string;decimals:number;uiAmountString:string}[];

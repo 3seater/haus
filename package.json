@@ -13,9 +13,18 @@
     "typecheck": "tsc --noEmit",
     "build": "next build",
     "test": "tsc -p tsconfig.tests.json && node --test test-results/tests/*.test.js",
-    "start": "next start -p 3100"
+    "start": "next start -p 3100",
+    "worker:build": "tsc -p tsconfig.worker.json",
+    "worker:check": "node .worker-build/scripts/fee-worker.js",
+    "worker:run": "node .worker-build/scripts/fee-worker.js --execute",
+    "deployment:check": "node scripts/deployment-check.cjs",
+    "vault:build": "powershell -NoProfile -File scripts/build-vault.ps1",
+    "vault:test": "powershell -NoProfile -File scripts/test-vault.ps1",
+    "infrastructure:check": "node scripts/infrastructure-check.cjs",
+    "launch-table:plan": "node .worker-build/scripts/launch-table-plan.js"
   },
   "dependencies": {
+    "@next/env": "15.5.25",
     "next": "^15.5.12",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",

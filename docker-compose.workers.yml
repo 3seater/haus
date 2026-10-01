@@ -1,0 +1,28 @@
+name: haus-workers
+services:
+  fees:
+    image: haus-fee-worker:local
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    env_file: .env.local
+    environment:
+      NODE_ENV: production
+      HAUS_WORKER_KEYPAIR_PATH: /run/haus-keys/fee-worker.json
+    init: true
+    restart: unless-stopped
+    stop_grace_period: 2m
+    volumes:
+      - ./.haus-data:/app/.haus-data
+      - ./contracts/.keys:/run/haus-keys:ro
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: '3'
+    healthcheck:
+      test: [CMD, node, -e, "const h=JSON.parse(require('fs').readFileSync('.haus-data/worker-health.json')); process.exit(h.status==='ok' && Date.now()-Date.parse(h.updatedAt)<300000 ? 0 : 1)"]
+      interval: 30s
+      timeout: 5s
+      start_period: 2m
+      retries: 3

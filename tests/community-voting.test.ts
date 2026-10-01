@@ -1,6 +1,7 @@
+import {coins} from './fixtures/coins';
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {coins,type Proposal,voteOn,winningProposal,closeRound} from '../lib/haus-data';
+import {type Proposal,voteOn,winningProposal,closeRound} from '../lib/haus-data';
 const initialProposals:Proposal[]=[
  {id:'p1',coinId:coins[0].id,author:'frogfather.sol',votes:128,voted:false,status:'open',design:{title:`${coins[0].name}.\nbuilt by us.`,tagline:'the internet needs a deep breath.',description:coins[0].story,theme:'editorial'}},
  {id:'p2',coinId:coins[0].id,author:'lily.sol',votes:96,voted:false,status:'open',design:{title:`Welcome to ${coins[0].name}.`,tagline:'built different. built together.',description:coins[0].story,theme:'playful'}},

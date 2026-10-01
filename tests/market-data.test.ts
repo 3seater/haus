@@ -1,7 +1,8 @@
+import {coins} from './fixtures/coins';
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {coins} from '../lib/haus-data';
-import {emptyMarket,normalizeMarket,selectMarketPair,type DexPair} from '../lib/market-data';
+
+import {emptyMarket,normalizeMarket,selectMarketPair,staleMarket,type DexPair} from '../lib/market-data';
 import {exportSite} from '../lib/export-site';
 const coin=coins[0];
 const pair:DexPair={chainId:'solana',dexId:'pumpfun',pairAddress:coins[1].mint,baseToken:{address:coin.mint,name:coin.name,symbol:coin.ticker},priceUsd:'0.000031',marketCap:31000,liquidity:{usd:4000},volume:{h24:500}};
@@ -23,5 +24,11 @@ test('External project links accept web URLs only',()=>{
 });
 test('Website export escapes editable content and uses the real contract',()=>{
  const html=exportSite(coin,{title:'<script>alert("x")</script>',tagline:'A & B',description:'A "coin"',theme:'editorial'});
- assert.ok(!html.includes('<script>'));assert.ok(html.includes('&lt;script&gt;'));assert.ok(html.includes('A &amp; B'));assert.ok(html.includes(`https://pump.fun/coin/${coin.mint}`));assert.ok(html.includes('<!doctype html>'));
+ assert.ok(!html.includes('<script>'));assert.ok(html.includes('&lt;script&gt;'));assert.ok(html.includes('A &amp; B'));assert.ok(html.includes(coin.mint));assert.ok(!html.includes(`https://pump.fun/coin/${coin.mint}`));assert.ok(html.includes('<!doctype html>'));
+});
+
+test('Provider failures preserve only recent genuine quotes, labelled stale with original timestamp',()=>{
+ const now=Date.now(),previous=normalizeMarket(coin,pair,new Date(now-1000).toISOString());
+ const stale=staleMarket(coin,previous,now);assert.equal(stale.cap,previous.cap);assert.equal(stale.updatedAt,previous.updatedAt);assert.equal(stale.marketStatus,'stale');
+ assert.equal(staleMarket(coin,previous,now+16*60000).price,null);assert.equal(staleMarket(coins[1],previous,now).price,null);
 });

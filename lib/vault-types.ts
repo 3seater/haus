@@ -1,0 +1,2 @@
+export type PublicRound={id:string;address:string;budget:string;remaining:string;closesAt:number;executeAfter:number;quorumBps:number;votes:string[];finalized:boolean;outcome:'hold'|'holders'|'developer';eligibleSupply:string;weight:string;claimable:string;claimed:boolean;proofAvailable:boolean};
+export type PublicVault={enabled:boolean;reason?:string;ownerAuthority:string;address?:string;developer?:string;balance?:string;paused?:boolean;rounds:PublicRound[];nextBefore?:string};

@@ -1,0 +1,10 @@
+{
+  "image": "solanafoundation/anchor@sha256:21ab8a16e19df4301a198d7a55ab2988549aa2d996e6b5ad229c1d95b9f2d326",
+  "platformTools": "v1.52",
+  "architecture": "sbfv1",
+  "sourceSha256": "36e45359a17dda2d7532802245a79187986f7b12be8d1f81b4db0029ac5b2135",
+  "lockSha256": "60a3f8bf6cb5a5d2eb5c14f5c42dc78839f3c134a41177b7d45bd91d3cfc8757",
+  "binarySha256": "43ab7e312092657535144bffe7b74b6aea6e1a7943fd7775e5205e028e14afb1",
+  "binaryBytes": 452960,
+  "deployed": false
+}

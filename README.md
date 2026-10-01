@@ -1,5 +1,14 @@
 # HAUS — We are the devs.
 
+## Vault implementation in progress
+
+Launches use Pump.fun createV2 with creator rewards assigned to the explicitly approved HAUS operator wallet `8nUax7zWTDE3yRuEcm4GevhmVP2u1NavKwvKSByZT92S`. The launch form and signed preparation message disclose this. No custom vault deployment is needed. Initial buys remain unavailable until a frozen lookup table is configured; users can launch with zero initial buy and buy afterward. Wallet review, exact-message verification, simulation, finalization evidence and recovery are enforced.
+
+Community chat, holder sessions, website rounds and shared assets use HAUS-prefixed Redis. Website voting is one vote per verified wallet, one hour, at least three voters and a strict majority; winners are served publicly at `/sites/<mint>`. Each write rechecks holdings. Assets support PNG/JPEG/WebP/GIF up to 4 MB and public downloads. See [community operating notes](docs/community-release.md).
+
+Vault allocations, buybacks, burns and DEX funding remain deferred. Their existing source and roadmap are retained. Never enable the fee worker or deploy a vault as part of the current release. No real token launch has been broadcast during implementation; a funded wallet must approve the first end-to-end live launch.
+
+
 Solana / Pump.fun discovery with a native HAUS market page and community website tools. Launch infrastructure was extracted from Perks; Perks itself is unchanged.
 
 ## Run locally
@@ -28,7 +37,7 @@ Set APP_ORIGIN to the exact deployed origin (local default: http://localhost:310
 
 Binding votes, DEX contributions/payment fulfillment, asset uploads, AI generation and hosted subdomains remain unconnected and are labeled accordingly. Website drafts are editable templates, not AI-generated sites. No deposit address or simulated checkout is shown.
 
-The launch buttons open the native HAUS token form. Live submission remains gated by explicit configuration: NEXT_PUBLIC_DEMO_MODE=false, LAUNCHES_ENABLED=true, mainnet wallet/RPC configuration, Redis, encryption key, metadata storage and origin. The signing/submit/confirmation pipeline is preserved but was not exercised on-chain. No secrets were copied and no transactions were submitted. See .env.example and docs/architecture.md before enabling it.
+The launch buttons open the native HAUS token form. Live submission remains gated by configuration, a verified vault deployment and a frozen launch lookup table. Perks RPC and Redis settings were reused in the ignored local environment with separate HAUS keys and a fresh launch-encryption key. Vault execution passed local-validator checks; real Pump wallet launches and mainnet deployment remain unverified. No real SOL was spent. See `.env.example` and `docs/vault-release.md` before enabling it.
 
 ## Data sources
 
@@ -36,3 +45,12 @@ The launch buttons open the native HAUS token form. Live submission remains gate
 - https://api.geckoterminal.com/docs/index.html
 - https://solana.com/docs/rpc/http/gettokenlargestaccounts
 - https://solana.com/docs/rpc/http/gettokenaccountsbyowner
+
+## Homepage and app routing
+
+- Local project homepage: `http://localhost:3100/`; token app: `http://localhost:3100/app`.
+- Production homepage: `https://haus.fun`; app: `https://app.haus.fun`. Both hosts should point to this same Next.js deployment. Middleware serves `/app` at the app host's root; no second project is required.
+- Register both custom domains with the hosting provider, configure its required DNS records and HTTPS, and set `APP_ORIGIN=https://app.haus.fun` for app API writes. DNS and hosting have not been changed by the local implementation.
+- Keep one `SITE_ACCESS_SECRET` across both hosts. The preview password session uses an HttpOnly `.haus.fun` cookie in production, so Open app does not require a second password. Local cookies remain host-only. This entry gate does not replace API wallet authorization.
+- Old `/?coin=...` and `/?view=...` links redirect to the app with their query parameters preserved. The app has no promotional hero; its first section is Explore.
+- Homepage descriptions distinguish the working discovery/studio tools from planned launches, vault execution and binding votes. Update that copy when the release gates are actually lifted.

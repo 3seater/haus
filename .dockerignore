@@ -1,0 +1,11 @@
+node_modules
+.git
+.next*
+.env*
+.haus-data
+.worker-build
+test-results
+contracts
+docs
+public
+*.tsbuildinfo

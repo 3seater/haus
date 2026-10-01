@@ -1,0 +1,9 @@
+[toolchain]
+anchor_version = "0.31.1"
+
+[programs.localnet]
+haus_vault = "FBVrAjsfxzA6ENq2vaf7Szwzj213uLsHMidYh6SRTu75"
+
+[provider]
+cluster = "Localnet"
+wallet = "./.keys/local-validator.json"

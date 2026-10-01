@@ -1,8 +1,16 @@
 node_modules/
 .next/
+.next-dev/
 .env*
 !.env.example
 *.tsbuildinfo
 test-results/
 
 .haus-data/
+contracts/target/
+contracts/.anchor/
+contracts/.keys/
+.worker-build/
+.next-verify/
+
+.next-studio-check/

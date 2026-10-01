@@ -1,0 +1,9 @@
+{
+  "status": "NOT_DEPLOYED",
+  "ownerAuthority": "8nUax7zWTDE3yRuEcm4GevhmVP2u1NavKwvKSByZT92S",
+  "network": "localnet-first",
+  "policyApproved": false,
+  "snapshotAuthority": null,
+  "programId": null,
+  "notes": "Owner address supplied by user. Timing, quorum, snapshot service and funding still need decisions. Development declare_id is not a deployed program."
+}

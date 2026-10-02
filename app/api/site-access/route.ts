@@ -3,7 +3,7 @@ import {accessCookie,accessToken} from '@/lib/site-access';
 export async function POST(request:Request){
  const url=new URL(request.url);
  const hostname=(request.headers.get('host')||url.host).split(':')[0].toLowerCase();
- const production=['haus.fun','www.haus.fun','app.haus.fun'].includes(hostname);
+ const production=['haus.fun','www.haus.fun','app.haus.fun','apps.haus.fun','docs.haus.fun'].includes(hostname);
  const expectedOrigin=production?`https://${hostname}`:url.origin;
  if(request.headers.get('origin')!==expectedOrigin)return NextResponse.json({error:'Unable to unlock.'},{status:403});
  const body=await request.json().catch(()=>null);

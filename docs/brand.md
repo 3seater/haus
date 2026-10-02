@@ -30,4 +30,6 @@ The living room serves holders; the Team room is the proposed top-20 group.
 
 ## Domain and assets
 
+Approved social graphic layout (2026-10-02): follow [social-graphics.md](social-graphics.md) for tweet artwork and article covers. The frozen Docs are live reference is in `public/brand-kit/approved-social-template/`.
+
 haus.fun and displayed subdomains are illustrative, not verified owned domains. Community identity must use Solana cluster and mint address. Mock coins and vector characters are demonstration content.

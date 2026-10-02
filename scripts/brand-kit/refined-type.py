@@ -11,7 +11,7 @@ for family, file in [('scribble', root/'public/fonts/HVSMEGS-Style1.otf'), ('bol
     font=TTFont(file)
     glyphs=font.getGlyphSet()
     cmap=font.getBestCmap()
-    for text in ['Haus', 'WE ARE', 'THE DEVS.', 'we are', 'the devs.', 'built by us.', 'BUILT BY US.']:
+    for text in ['Haus', 'HAUS', '.fun', '.FUN', 'WE ARE', 'THE DEVS.', 'we are', 'the devs.', 'built by us.', 'BUILT BY US.', 'build your', 'BUILD YOUR', 'your coin.', 'our Haus.', 'together.', 'us.', 'A HOME FOR', 'EVERY HOLDER.']:
         pen=SVGPathPen(glyphs)
         bounds=BoundsPen(glyphs)
         x=0

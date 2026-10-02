@@ -1,0 +1,70 @@
+{
+  "status": "Approved by Jacob 2026-10-02; canonical layout",
+  "colors": {
+    "background": "#ffffff",
+    "ink": "#191919",
+    "pink": "#f2a8cd",
+    "palePink": "#f8d4e5"
+  },
+  "fonts": {
+    "headline": "Anton",
+    "accent": "HV SMEGS Style 1",
+    "pills": "Arial"
+  },
+  "twitter": "@hausdotfun",
+  "website": "haus.fun",
+  "cornerRadius": 4,
+  "announcement": {
+    "width": 1600,
+    "height": 900,
+    "margin": 80,
+    "grid": {
+      "spacing": 100,
+      "opacity": 0.085,
+      "strokeWidth": 1.25
+    },
+    "browserBar": {
+      "height": 50,
+      "url": "docs.haus.fun",
+      "cornerRadius": 4
+    },
+    "headline": {
+      "x": 78,
+      "y": 259,
+      "width": 496,
+      "accentY": 417
+    },
+    "screenshot": {
+      "x": 620,
+      "y": 170,
+      "width": 1100,
+      "height": 618.75,
+      "rotation": -4,
+      "cornerRadius": 4
+    },
+    "pills": {
+      "x": 80,
+      "y": 786
+    }
+  },
+  "article": {
+    "width": 1500,
+    "height": 600,
+    "margin": 72,
+    "pills": {
+      "x": 72,
+      "y": 490
+    }
+  },
+  "screenshot": {
+    "source": "haus/docs/screenshots/haus-documentation.png",
+    "captured": "2026-09-30",
+    "liveCaptureVerified": false
+  },
+  "futureGraphics": [
+    "Product updates: headline left, actual interface right",
+    "How it works: one holder action per graphic",
+    "Milestones: one short statement or number",
+    "Article covers: 5:2 headline with handwritten Haus"
+  ]
+}

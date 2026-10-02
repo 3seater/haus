@@ -1,0 +1,162 @@
+[
+  {
+    "name": "Pink Undertone",
+    "desc": "An ink signature with one restrained pink contour.",
+    "slug": "01-pink-undertone",
+    "kind": "Type",
+    "width": 1500,
+    "height": 500
+  },
+  {
+    "name": "Build Your Haus",
+    "desc": "A two-line handwritten invitation with a large pink Haus.",
+    "slug": "02-build-your-haus",
+    "kind": "Type",
+    "width": 1500,
+    "height": 500
+  },
+  {
+    "name": "Made Personal",
+    "desc": "Bold architectural type paired with the handwritten Haus.",
+    "slug": "03-made-personal",
+    "kind": "Type",
+    "width": 1500,
+    "height": 500
+  },
+  {
+    "name": "One Of Us",
+    "desc": "A field of outlined signatures, with one holder in pink.",
+    "slug": "04-one-of-us",
+    "kind": "Type",
+    "width": 1500,
+    "height": 500
+  },
+  {
+    "name": "We Are The Devs",
+    "desc": "An expansive handwritten statement and small pink Haus signature.",
+    "slug": "05-we-are-the-devs",
+    "kind": "Type",
+    "width": 1500,
+    "height": 500
+  },
+  {
+    "name": "Your Coin Our Haus",
+    "desc": "Two handwritten voices meet across the white page.",
+    "slug": "06-your-coin-our-haus",
+    "kind": "Type",
+    "width": 1500,
+    "height": 500
+  },
+  {
+    "name": "Signed By Everyone",
+    "desc": "Airy ink contours and a small pink handwritten signature.",
+    "slug": "07-signed-by-everyone",
+    "kind": "Type",
+    "width": 1500,
+    "height": 500
+  },
+  {
+    "name": "Common Feeling",
+    "desc": "One soft pink disk grounds a broad handwritten together.",
+    "slug": "08-common-feeling",
+    "kind": "Type + form",
+    "width": 1500,
+    "height": 500
+  },
+  {
+    "name": "Holder Atlas",
+    "desc": "A loose bubble map gathers independent holders around a shared center.",
+    "slug": "09-holder-atlas",
+    "kind": "Graphic",
+    "width": 1500,
+    "height": 500
+  },
+  {
+    "name": "The People Are The Network",
+    "desc": "People form the nodes of an open, softly curving network.",
+    "slug": "10-the-people-are-the-network",
+    "kind": "Graphic",
+    "width": 1500,
+    "height": 500
+  },
+  {
+    "name": "A Home Made Of Holders",
+    "desc": "Many individual points resolve into one shared home.",
+    "slug": "11-a-home-made-of-holders",
+    "kind": "Graphic",
+    "width": 1500,
+    "height": 500
+  },
+  {
+    "name": "Common Thread",
+    "desc": "Twenty-one independent strands gather into a shared passage.",
+    "slug": "12-common-thread",
+    "kind": "Graphic",
+    "width": 1500,
+    "height": 500
+  },
+  {
+    "name": "Collective Fingerprint",
+    "desc": "A shared identity takes shape through concentric ink and pink contours.",
+    "slug": "13-collective-fingerprint",
+    "kind": "Graphic",
+    "width": 1500,
+    "height": 500
+  },
+  {
+    "name": "Room For Everyone",
+    "desc": "Nine open rooms make one shared architectural rhythm.",
+    "slug": "14-room-for-everyone",
+    "kind": "Graphic",
+    "width": 1500,
+    "height": 500
+  },
+  {
+    "name": "Around The Same Idea",
+    "desc": "Eighteen intersecting orbits hold one pink center.",
+    "slug": "15-around-the-same-idea",
+    "kind": "Graphic",
+    "width": 1500,
+    "height": 500
+  },
+  {
+    "name": "Stronger In Common",
+    "desc": "Oversized interlocking ink loops with one pink link.",
+    "slug": "16-stronger-in-common",
+    "kind": "Graphic",
+    "width": 1500,
+    "height": 500
+  },
+  {
+    "name": "Social Fabric",
+    "desc": "Pink threads weave through an open ink fabric.",
+    "slug": "17-social-fabric",
+    "kind": "Graphic",
+    "width": 1500,
+    "height": 500
+  },
+  {
+    "name": "No Spectators",
+    "desc": "A dense, gently rounded gathering of people, each an active part of the whole.",
+    "slug": "18-no-spectators",
+    "kind": "Graphic",
+    "width": 1500,
+    "height": 500
+  },
+  {
+    "name": "Under One Roof",
+    "desc": "Separate paths become one protective arch over a shared pink center.",
+    "slug": "19-under-one-roof",
+    "kind": "Graphic",
+    "width": 1500,
+    "height": 500
+  },
+  {
+    "name": "The Gathering",
+    "desc": "A handwritten Haus sits inside an organic circle of connected holders.",
+    "slug": "20-the-gathering",
+    "kind": "Type + graphic",
+    "width": 1500,
+    "height": 500
+  }
+]

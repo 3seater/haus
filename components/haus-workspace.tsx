@@ -25,9 +25,9 @@ type Tab=typeof tabs[number]['id'];
 type Session={token:string;wallet:string;mint:string;expires:number};
 const short=(wallet:string)=>`${wallet.slice(0,4)}…${wallet.slice(-4)}`;
 
-export function HausWorkspace({coin,initialTab='overview',draft,onSave,onBack,initialVerifyOpen=false}:{initialVerifyOpen?:boolean;coin:MarketCoin;initialTab?:Tab;draft?:SiteDesign;onSave:(design:SiteDesign)=>void;onBack:()=>void}){
+export function HausWorkspace({coin,initialTab='overview',draft,onSave,onBack,initialVerifyOpen=false,previewRoom}:{previewRoom?:HausRoom;initialVerifyOpen?:boolean;coin:MarketCoin;initialTab?:Tab;draft?:SiteDesign;onSave:(design:SiteDesign)=>void;onBack:()=>void}){
  const [tab,setTab]=useState<Tab>(initialTab),[design,setDesign]=useState<SiteDesign>(draft||initialDesign(coin));
- const [room,setRoom]=useState<HausRoom>(emptyRoom()),[loading,setLoading]=useState(true),[feedError,setFeedError]=useState('');
+ const [room,setRoom]=useState<HausRoom>(previewRoom||emptyRoom()),[loading,setLoading]=useState(!previewRoom),[feedError,setFeedError]=useState('');
  const [text,setText]=useState(''),[notice,setNotice]=useState(''),[sending,setSending]=useState(false),[pitching,setPitching]=useState(false);
  const [previewSize,setPreviewSize]=useState<'desktop'|'mobile'>('desktop');
  const [connecting,setConnecting]=useState(false);
@@ -43,16 +43,17 @@ export function HausWorkspace({coin,initialTab='overview',draft,onSave,onBack,in
  const chatList=useRef<HTMLDivElement>(null),nearBottom=useRef(true);
  const requestVersion=useRef(0);
 
- useEffect(()=>{const desired=new URLSearchParams(location.search).get('tab');setTab(tabs.some(t=>t.id===desired)?desired as Tab:initialTab);},[initialTab]);
+ useEffect(()=>{if(previewRoom)return;const desired=new URLSearchParams(location.search).get('tab');setTab(tabs.some(t=>t.id===desired)?desired as Tab:initialTab);},[initialTab,previewRoom]);
  useEffect(()=>{setSession(null);setVerifyError('');if(wallet&&connecting){setVerifyOpen(true);setConnecting(false);}},[wallet,connecting]);
  useEffect(()=>{if(!session)return;const timer=setTimeout(()=>setSession(null),Math.max(0,session.expires-Date.now()));return()=>clearTimeout(timer);},[session]);
  useEffect(()=>{if(!notice)return;const timer=setTimeout(()=>setNotice(''),5000);return()=>clearTimeout(timer);},[notice]);
  useEffect(()=>{
+  if(previewRoom)return;
   let stopped=false;const controller=new AbortController();
   async function load(){const version=++requestVersion.current;try{const response=await fetch(`/api/haus?mint=${coin.mint}`,{cache:'no-store',signal:controller.signal});const data=await response.json();if(!response.ok)throw new Error(data.error||'Room unavailable.');if(!stopped&&version===requestVersion.current){setRoom(data);setFeedError('');}}catch(error){if(!stopped)setFeedError(error instanceof Error?error.message:'Room unavailable.');}finally{if(!stopped)setLoading(false);}}
   void load();const timer=setInterval(()=>{if(document.visibilityState==='visible')void load();},6000);
   return()=>{stopped=true;controller.abort();clearInterval(timer);};
- },[coin.mint]);
+ },[coin.mint,previewRoom]);
  useEffect(()=>{if(nearBottom.current&&chatList.current)chatList.current.scrollTop=chatList.current.scrollHeight;},[room.messages.length,chatSize]);
 
  function selectTab(next:Tab){setTab(next);const url=new URL(location.href);url.searchParams.set('view','community');url.searchParams.set('tab',next);history.replaceState({},'',url);}

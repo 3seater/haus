@@ -49,8 +49,8 @@ The launch buttons open the native HAUS token form. Live submission remains gate
 ## Homepage and app routing
 
 - Local project homepage: `http://localhost:3100/`; token app: `http://localhost:3100/app`.
-- Production homepage: `https://haus.fun`; app: `https://app.haus.fun`. Both hosts should point to this same Next.js deployment. Middleware serves `/app` at the app host's root; no second project is required.
-- Register both custom domains with the hosting provider, configure its required DNS records and HTTPS, and set `APP_ORIGIN=https://app.haus.fun` for app API writes. DNS and hosting have not been changed by the local implementation.
+- Open app uses `/app` on the current host (for example `https://www.haus.fun/app`). No app subdomain is required. Middleware still supports `app.haus.fun` if it is connected later.
+- Set `APP_ORIGIN` to the deployed app origin, for example `https://www.haus.fun`. Adding an optional app subdomain requires DNS and a matching domain assignment in Vercel.
 - The cosmetic preview gate accepts `1337` and remembers entry with a `.haus.fun` cookie across production hosts. It requires no secret or environment variable. Local cookies remain host-only. This is a UI gate, not a security boundary; API actions still require wallet authorization.
 - Old `/?coin=...` and `/?view=...` links redirect to the app with their query parameters preserved. The app has no promotional hero; its first section is Explore.
 - Homepage descriptions distinguish the working discovery/studio tools from planned launches, vault execution and binding votes. Update that copy when the release gates are actually lifted.

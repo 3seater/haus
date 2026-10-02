@@ -29,7 +29,7 @@ export function VaultPanel({mint}:{mint:string}){
  }
  return <section aria-label="Community fee vault"><div className="haus-tool-heading"><div><h2>Fees & rewards</h2><p>Creator fees collect here. Holders decide how each allocation is used.</p></div></div>
  <p className="haus-footnote">HAUS initially controls emergency pauses, upgrades, and the holder snapshot service. The token developer has no default withdrawal access. Buyback and burn is not available in this release.</p>
- <p className="haus-footnote" style={{overflowWrap:'anywhere'}}>HAUS owner: {data?.ownerAuthority??'8nUax7zWTDE3yRuEcm4GevhmVP2u1NavKwvKSByZT92S'}</p>
+ <p className="haus-footnote" style={{overflowWrap:'anywhere'}}>HAUS owner: {data?.ownerAuthority??'Not configured'}</p>
  {error&&<p role="alert">{error}</p>}
  {!data&&!error&&<p>Checking vault…</p>}
  {data&&!data.enabled&&<div className="haus-empty"><h3>Vault unavailable</h3><p>{data.reason}</p><p>No rewards or voting results are simulated.</p></div>}

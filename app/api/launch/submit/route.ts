@@ -7,13 +7,13 @@ import {Keypair} from '@solana/web3.js';
 import {decrypt,encrypt} from '@/lib/crypto';
 import bs58 from 'bs58';
 import {readLaunch} from '@/lib/launch-store';
-import {HAUS_CREATOR_RECIPIENT} from '@/lib/launch-policy';
+
 import {verifyVersionedLaunch} from '@/lib/launch-versioned';
 export const POST=route(async request=>{
   origin(request);live('LAUNCHES_ENABLED');
   const input=z.object({mint:z.string().max(44),transaction:z.string().max(2000)}).parse(await request.json());
   const token=await readLaunch(input.mint);
-  if(!token||token.vaultProgram||token.creatorRecipient!==HAUS_CREATOR_RECIPIENT)throw new HttpError(409,'The launch recipient policy changed. Prepare a new launch. No transaction was submitted.');
+  if(!token||token.vaultProgram||token.creatorRecipient!==token.creatorWallet)throw new HttpError(409,'The launch recipient policy changed. Prepare a new launch. No transaction was submitted.');
   const raw=await redis().get(`prepared-launch:${input.mint}`);
   if(!raw)throw new HttpError(409,'This prepared launch expired. Check your wallet history before starting another launch.');
   const prepared=JSON.parse(raw);

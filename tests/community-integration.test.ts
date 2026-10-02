@@ -11,7 +11,7 @@ import {redis} from '../lib/redis';
 import {createLaunch} from '../lib/pump';
 import {OnlinePumpSdk} from '@pump-fun/pump-sdk';
 import {rpc} from '../lib/solana';
-import {HAUS_CREATOR_RECIPIENT} from '../lib/launch-policy';
+
 const enabled=process.env.HAUS_INTEGRATION_CHECK==='true';
 test('Redis keeps sessions across instances, rejects replay, serializes simultaneous votes and persists assets atomically',{skip:!enabled},async()=>{
  const pair=Keypair.generate(),wallet=pair.publicKey.toBase58(),mint=Keypair.generate().publicKey.toBase58();let owns=true;const holds=async()=>owns;const first=new CommunityAccess(holds),second=new CommunityAccess(holds);let challengeId='',token='';const assetId=randomUUID();
@@ -32,9 +32,9 @@ test('Redis keeps sessions across instances, rejects replay, serializes simultan
   owns=false;await assert.rejects(second.authorize(token,mint),/Holdings changed/);assert.equal(await redis().get('holder:session:'+token),null);
  }finally{try{await redis().del('room:v2:'+mint,'room:asset:'+mint+':'+assetId,'holder:challenge:'+challengeId,'holder:session:'+token,'rate:holder-challenge:'+wallet);}finally{redis().disconnect();}}
 });
-test('Mainnet launch simulation uses the authorized operator recipient without a vault or initial buy',{skip:process.env.HAUS_LAUNCH_SIMULATION!=='true'},async()=>{
+test('Mainnet launch simulation uses the launching wallet recipient without a vault or initial buy',{skip:process.env.HAUS_LAUNCH_SIMULATION!=='true'},async()=>{
  const publicPayer=(await new OnlinePumpSdk(rpc()).fetchGlobal()).feeRecipient.toBase58();
- const launch=await createLaunch(publicPayer,'HAUS simulation','HAUSTEST','https://example.com/haus-test.json','0');assert.equal(launch.creatorRecipient,HAUS_CREATOR_RECIPIENT);assert.equal(launch.initialBuyLamports,'0');assert.ok(launch.transaction);assert.ok(!('vaultProgram' in launch));
+ const launch=await createLaunch(publicPayer,'HAUS simulation','HAUSTEST','https://example.com/haus-test.json','0');assert.equal(launch.creatorRecipient,publicPayer);assert.equal(launch.initialBuyLamports,'0');assert.ok(launch.transaction);assert.ok(!('vaultProgram' in launch));
  // simulateTransaction only. No signed transaction is broadcast and no SOL is spent.
 });
 

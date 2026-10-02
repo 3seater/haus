@@ -5,12 +5,12 @@ import {NATIVE_MINT} from '@solana/spl-token';
 import { rpc } from './solana';
 import { HttpError } from './config';
 import {encrypt} from './crypto';
-import {HAUS_CREATOR_RECIPIENT} from './launch-policy';
+
 import {decodeVault,vaultAddress} from './vault-addresses';
 import {buildVersionedLaunch} from './launch-versioned';
 import {launchLookupTable} from './launch-lookup';
 export async function createLaunch(user: string, name: string, symbol: string, uri: string,initialBuySol='0') {
-  const creator=new PublicKey(HAUS_CREATOR_RECIPIENT);
+  const creator=new PublicKey(user);
   if(Buffer.byteLength(uri,'utf8')>200)throw new HttpError(409,'Metadata provider returned an unsupported URI length. No transaction was created.');
   const lookup=process.env.HAUS_LAUNCH_LOOKUP_TABLE?await launchLookupTable():undefined;
   const mint = Keypair.generate();
@@ -40,7 +40,7 @@ export async function createLaunch(user: string, name: string, symbol: string, u
 export async function verifyLaunch(mint: string, wallet: string, signature: string, expected:{name:string;symbol:string;metadataUri:string;creatorRecipient?:string;vaultProgram?:string}) {
   if(!expected.creatorRecipient)throw new HttpError(409,'Launch recipient evidence is missing.');
   const program=expected.vaultProgram?new PublicKey(expected.vaultProgram):null;
-  const recipient=program?vaultAddress(program,new PublicKey(mint)):new PublicKey(HAUS_CREATOR_RECIPIENT);
+  const recipient=program?vaultAddress(program,new PublicKey(mint)):new PublicKey(wallet);
   if(recipient.toBase58()!==expected.creatorRecipient)throw new HttpError(403,'Unexpected creator-fee recipient.');
   const transaction = await rpc().getTransaction(signature,{commitment:'finalized',maxSupportedTransactionVersion:0});
   if (!transaction || transaction.meta?.err) throw new HttpError(409,'Launch is not finalized yet.');
@@ -73,4 +73,5 @@ export async function verifyLaunch(mint: string, wallet: string, signature: stri
   if(event.user.toBase58()!==wallet||!event.creator.equals(recipient)||event.name!==expected.name||event.symbol!==expected.symbol||event.uri!==expected.metadataUri||event.isMayhemMode||event.isCashbackEnabled||event.isHolderReward||![PublicKey.default.toBase58(),NATIVE_MINT.toBase58()].includes(event.quoteMint.toBase58()))throw new HttpError(403,'Token creation evidence does not match this launch.');
   return {slot:transaction.slot,supply:supply.value.amount,createdAt:new Date((transaction.blockTime??Number(event.timestamp))*1000).toISOString()};
 }
+
 

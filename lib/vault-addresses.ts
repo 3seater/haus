@@ -1,6 +1,6 @@
 import {PublicKey,SystemProgram,TransactionInstruction} from '@solana/web3.js';
 import {createHash} from 'node:crypto';
-export const OWNER_AUTHORITY='8nUax7zWTDE3yRuEcm4GevhmVP2u1NavKwvKSByZT92S';
+export const OWNER_AUTHORITY=process.env.HAUS_VAULT_OWNER_AUTHORITY||'';
 export const discriminator=(kind:'global'|'account',name:string)=>createHash('sha256').update(`${kind}:${name}`).digest().subarray(0,8);
 export function u64(value:bigint){if(value<0n||value>0xffffffffffffffffn)throw new Error('Invalid u64');const data=Buffer.alloc(8);data.writeBigUInt64LE(value);return data;}
 export const configAddress=(program:PublicKey)=>PublicKey.findProgramAddressSync([Buffer.from('config')],program)[0];

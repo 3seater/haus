@@ -4,7 +4,7 @@ Status: implementation in progress; contract compiled and tested locally, NOT de
 
 The user approved regular Pump creator-fee mode with per-token HAUS vaults, claimable SOL holder rewards, and a personally controlled HAUS owner authority. DEX fulfillment is explicitly deferred.
 
-Owner authority supplied by the user: `8nUax7zWTDE3yRuEcm4GevhmVP2u1NavKwvKSByZT92S`.
+Vault owner authority is unconfigured. Any future vault deployment must explicitly configure HAUS_VAULT_OWNER_AUTHORITY.
 This is the platform owner, not every token's developer. No secret or signing capability for this wallet is stored here.
 
 ## Implemented source

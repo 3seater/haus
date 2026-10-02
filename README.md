@@ -2,7 +2,7 @@
 
 ## Vault implementation in progress
 
-Launches use Pump.fun createV2 with creator rewards assigned to the explicitly approved HAUS operator wallet `8nUax7zWTDE3yRuEcm4GevhmVP2u1NavKwvKSByZT92S`. The launch form and signed preparation message disclose this. No custom vault deployment is needed. Initial buys remain unavailable until a frozen lookup table is configured; users can launch with zero initial buy and buy afterward. Wallet review, exact-message verification, simulation, finalization evidence and recovery are enforced.
+Launches use Pump.fun createV2 with creator rewards assigned to the launching wallet. The launch form and signed preparation message disclose this. No custom vault deployment is needed. Initial buys remain unavailable until a frozen lookup table is configured; users can launch with zero initial buy and buy afterward. Wallet review, exact-message verification, simulation, finalization evidence and recovery are enforced.
 
 Community chat, holder sessions, website rounds and shared assets use HAUS-prefixed Redis. Website voting is one vote per verified wallet, one hour, at least three voters and a strict majority; winners are served publicly at `/sites/<mint>`. Each write rechecks holdings. Assets support PNG/JPEG/WebP/GIF up to 4 MB and public downloads. See [community operating notes](docs/community-release.md).
 

@@ -6,7 +6,7 @@ import { WalletMultiButton } from './wallet-button';
 import { VersionedTransaction } from '@solana/web3.js';
 import { ArrowUpRight, ImagePlus, LoaderCircle, CheckCircle2 } from 'lucide-react';
 import { Dialog } from './ui/dialog';
-import {HAUS_CREATOR_RECIPIENT,CREATOR_FEE_DISCLOSURE} from '@/lib/launch-policy';
+import {CREATOR_FEE_DISCLOSURE} from '@/lib/launch-policy';
 import { api } from '@/lib/client';
 
 function LaunchImageField() {
@@ -104,8 +104,8 @@ export function LaunchModal({open,onOpenChange,preview=false}:{open:boolean;onOp
     <div className="form-row"><label>Token name<input name="name" placeholder="HAUS" maxLength={32} required/></label><label>Ticker<input name="symbol" placeholder="TICKER" pattern="[A-Za-z0-9]{1,10}" maxLength={10} required/></label></div><label>The story<textarea name="description" placeholder="A short description of the token" maxLength={500} required rows={3}/></label>
     <LaunchImageField/>
     <label>Initial buy in SOL {status?.initialBuyEnabled?'(optional)':'(not enabled — buy after launch)'}<input name="initialBuySol" readOnly={!status?.initialBuyEnabled} title={!status?.initialBuyEnabled?'Launch first, then buy on Pump.fun. Initial buys are not enabled yet.':undefined} inputMode="decimal" pattern="[0-9]{1,3}(\.[0-9]{1,9})?" defaultValue="0" required/></label>
-    <div className="launch-info"><span>Network <b>Solana mainnet</b></span><span>Creator fees <b>HAUS operator wallet</b></span></div>
-    <p className="secure-note">{CREATOR_FEE_DISCLOSURE} <a href={`https://solscan.io/account/${HAUS_CREATOR_RECIPIENT}`} target="_blank" rel="noreferrer">View recipient ↗</a></p>
+    <div className="launch-info"><span>Network <b>Solana mainnet</b></span><span>Creator fees <b>Your connected wallet</b></span></div>
+    <p className="secure-note">{CREATOR_FEE_DISCLOSURE} {address&&<a href={`https://solscan.io/account/${address}`} target="_blank" rel="noreferrer">View recipient ↗</a>}</p>
     {!publicKey?<WalletMultiButton/>:<button className="button primary full" disabled={busy||!status?.enabled}>{busy?<LoaderCircle className="spin" size={18}/>:<ArrowUpRight size={18}/>} {busy?'Preparing your launch…':'Review launch'}</button>}
     {(status?.enabled||status?.reason!=='The live indexer is catching up. Try again shortly.')&&<p className="secure-note">{status?.enabled?'Your wallet pays network and creation costs. No added HAUS launch fee.':status?.reason||'Checking launch readiness…'}</p>}{error&&<p role="alert" className="error-message">{error}</p>}
     </form>}

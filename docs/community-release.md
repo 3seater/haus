@@ -1,7 +1,7 @@
 # Community release — 2026-10-01
 
 ## Current scope
-- Pump.fun launches set creator rewards to HAUS operator wallet `8nUax7zWTDE3yRuEcm4GevhmVP2u1NavKwvKSByZT92S`. This is disclosed in the form, message signature and final transaction review. It is not a per-token community vault. Do not imply a future vault will automatically change existing coins.
+- Pump.fun launches set creator rewards to launching wallet. This is disclosed in the form, message signature and final transaction review. It is not a per-token community vault. Do not imply a future vault will automatically change existing coins.
 - Launches with no initial buy work without a lookup table. Initial buys stay disabled until a finalized, active, frozen `HAUS_LAUNCH_LOOKUP_TABLE` is configured and tested. Users can buy separately after launch.
 - New launches require a funded user wallet. Server preparation simulates first; the mint signer is encrypted until exact wallet approval; submission is simulated again and finalized creation evidence is checked before registry activation.
 - Holder sessions and challenges live in Redis. Challenges expire in two minutes, sessions in fifteen. Each post, pitch, vote and upload checks fresh confirmed SPL/Token-2022 holdings. RPC failures never grant access. Message signatures move no funds.

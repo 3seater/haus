@@ -12,6 +12,6 @@ export async function GET() {
  try{
   const [genesis]=await Promise.all([rpc().getGenesisHash(),redis().ping(),process.env.HAUS_LAUNCH_LOOKUP_TABLE?launchLookupTable():Promise.resolve()]);
   if(genesis!=='5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpKuc147dw2N9d')return json({enabled:false,reason:'RPC is not connected to Solana mainnet.',checks});
-  return json({enabled:true,initialBuyEnabled:!!process.env.HAUS_LAUNCH_LOOKUP_TABLE,reason:'Ready for wallet review. Creator rewards go to the HAUS operator wallet.',checks});
+  return json({enabled:true,initialBuyEnabled:!!process.env.HAUS_LAUNCH_LOOKUP_TABLE,reason:'Ready for wallet review. Creator rewards go to the wallet launching the token.',checks});
  }catch(error){return json({enabled:false,reason:error instanceof HttpError?error.message:'Launch infrastructure is unavailable. No transaction will be created.',checks});}
 }

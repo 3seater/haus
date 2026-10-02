@@ -1,4 +1,4 @@
-import {HAUS_CREATOR_RECIPIENT,CREATOR_FEE_DISCLOSURE} from './launch-policy';
+import {CREATOR_FEE_DISCLOSURE} from './launch-policy';
 import {createHash,randomUUID} from 'node:crypto';
 import {z} from 'zod';
 import {walletSchema,verifySignature} from './auth';
@@ -10,15 +10,15 @@ export type LaunchIntent=z.infer<typeof launchIntent>;
 export function intentHash(input:LaunchIntent){return createHash('sha256').update(JSON.stringify(launchIntent.parse(input))).digest('hex');}
 export async function launchChallenge(input:LaunchIntent,verifiedOrigin=new URL(required('APP_ORIGIN')).origin){
   const id=randomUUID(),digest=intentHash(input);
-  const message=`${verifiedOrigin}\nPrepare a HAUS token launch\nWallet: ${input.wallet}\nName: ${input.name}\nTicker: ${input.symbol}\nInitial buy: ${input.initialBuySol} SOL\nCreator rewards: ${HAUS_CREATOR_RECIPIENT} (HAUS operator). ${CREATOR_FEE_DISCLOSURE}\nIntent: ${digest}\nNonce: ${id}\nThis message authorizes preparation only. No funds are moved.`;
-  await redis().set(`launch-proof:${id}`,JSON.stringify({wallet:input.wallet,digest,message,creatorRecipient:HAUS_CREATOR_RECIPIENT}),'EX',300);
+  const message=`${verifiedOrigin}\nPrepare a HAUS token launch\nWallet: ${input.wallet}\nName: ${input.name}\nTicker: ${input.symbol}\nInitial buy: ${input.initialBuySol} SOL\nCreator rewards: ${input.wallet} (token creator). ${CREATOR_FEE_DISCLOSURE}\nIntent: ${digest}\nNonce: ${id}\nThis message authorizes preparation only. No funds are moved.`;
+  await redis().set(`launch-proof:${id}`,JSON.stringify({wallet:input.wallet,digest,message,creatorRecipient:input.wallet}),'EX',300);
   return {challengeId:id,message};
 }
 export async function consumeLaunchProof(input:LaunchIntent,id:string,signature:string){
   const key=`launch-proof:${id}`,raw=await redis().get(key);
   if(!raw)throw new HttpError(401,'Launch authorization expired. Please try again.');
   const proof=JSON.parse(raw);
-  if(proof.creatorRecipient!==HAUS_CREATOR_RECIPIENT||proof.wallet!==input.wallet||proof.digest!==intentHash(input))throw new HttpError(401,'Launch details changed. Please authorize them again.');
+  if(proof.creatorRecipient!==input.wallet||proof.wallet!==input.wallet||proof.digest!==intentHash(input))throw new HttpError(401,'Launch details changed. Please authorize them again.');
   verifySignature(input.wallet,proof.message,signature);
   const used=await redis().eval("if redis.call('GET',KEYS[1])==ARGV[1] then return redis.call('DEL',KEYS[1]) end return 0",1,key,raw);
   if(used!==1)throw new HttpError(409,'Launch authorization was already used.');

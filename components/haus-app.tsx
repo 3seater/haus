@@ -29,7 +29,7 @@ const validViews:View[]=['explore','saved','coin','community','builder','hauses'
 const storageKey='haus-workspace-v1';
 function Brand(){return <span className="brand"><HausMark/><span>haus</span></span>;}
 
-export function HausApp({homeUrl='/',initialMint,initialView,initialTab}:{homeUrl?:string;initialMint?:string;initialView?:string;initialTab?:string}){
+export function HausApp({homeUrl='/',docsUrl='/docs',initialMint,initialView,initialTab}:{homeUrl?:string;docsUrl?:string;initialMint?:string;initialView?:string;initialTab?:string}){
  const [view,setView]=useState<View>(()=>validViews.includes(initialView as View)?initialView as View:initialMint?'coin':'explore');
  const [selectedId,setSelectedId]=useState(initialMint||'');
  const [markets,setMarkets]=useState<MarketCoin[]>([]);
@@ -91,7 +91,7 @@ export function HausApp({homeUrl='/',initialMint,initialView,initialTab}:{homeUr
  {(view==='community'||view==='builder')&&selected&&<HausWorkspace key={selected.mint} coin={selected} initialTab={view==='builder'?'website':(['overview','website','vault','dex','proposals','assets','chart'].includes(initialTab||'')?initialTab as 'overview':'overview')} draft={drafts[selected.id]} onBack={()=>navigate('coin')} onSave={nextDesign=>{const next={...drafts,[selected.id]:nextDesign};localStorage.setItem(storageKey,JSON.stringify({saved,drafts:next}));setDrafts(next);}}/>}
 
  {view==='hauses'&&<MyHauses markets={markets} onOpen={coin=>navigate('community',coin.id)} onExplore={()=>navigate('explore')}/>}
- <SiteFooter homeUrl={homeUrl} onHow={()=>setHowOpen(true)}/>
+ <SiteFooter docsUrl={docsUrl} homeUrl={homeUrl} onHow={()=>setHowOpen(true)}/>
  </main>
  </div>
  {howOpen&&<HowItWorks onClose={()=>setHowOpen(false)} onStart={()=>{setHowOpen(false);navigate('explore');}}/>}

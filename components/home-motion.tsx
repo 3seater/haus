@@ -68,9 +68,9 @@ export function ScrollType(){
  return <section ref={ref} className="home-scroll-type" aria-label="Independent minds. Shared direction."><div aria-hidden="true"><span>INDEPENDENT MINDS. <i><HausMark/></i> INDEPENDENT MINDS. <i><HausMark/></i> </span><span>SHARED DIRECTION. <i><HausMark/></i> SHARED DIRECTION. <i><HausMark/></i> </span></div></section>;
 }
 
-export function BuildHausCTA({appUrl}:{appUrl:string}){
+export function BuildHausCTA({appUrl,docsUrl='/docs'}:{appUrl:string;docsUrl?:string}){
  return <section className="home-build-cta">
   <CtaField/>
-  <div className="home-wrap build-content"><h2>BUILD<br/>YOUR <span>HAUS.</span></h2><div className="build-actions"><a className="button dark" href={appUrl}>Build your haus <ArrowUpRight size={20}/></a><a className="button build-docs" href="/docs">Read the docs <ArrowUpRight size={20}/></a></div></div>
+  <div className="home-wrap build-content"><h2>BUILD<br/>YOUR <span>HAUS.</span></h2><div className="build-actions"><a className="button dark" href={appUrl}>Build your haus <ArrowUpRight size={20}/></a><a className="button build-docs" href={docsUrl}>Read the docs <ArrowUpRight size={20}/></a></div></div>
  </section>;
 }

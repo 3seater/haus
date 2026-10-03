@@ -122,6 +122,9 @@
 }
 
 .wallet-adapter-modal {
+    /* Radix dialogs disable body pointer events. This separate portal must
+       explicitly receive clicks instead of passing them to the form below. */
+    pointer-events: auto;
     position: fixed;
     top: 0;
     left: 0;

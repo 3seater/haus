@@ -2,9 +2,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
 import bs58 from 'bs58';
-import { WalletMultiButton } from './wallet-button';
+import { useWalletModal } from '@solana/wallet-adapter-react-ui';
 import { VersionedTransaction } from '@solana/web3.js';
-import { ArrowUpRight, ImagePlus, LoaderCircle, CheckCircle2 } from 'lucide-react';
+import { ArrowUpRight, ImagePlus, LoaderCircle, CheckCircle2, Wallet } from 'lucide-react';
 import { Dialog } from './ui/dialog';
 import {CREATOR_FEE_DISCLOSURE} from '@/lib/launch-policy';
 import { api } from '@/lib/client';
@@ -33,6 +33,7 @@ function LaunchImageField() {
 
 export function LaunchModal({open,onOpenChange,preview=false}:{open:boolean;onOpenChange:(value:boolean)=>void;preview?:boolean}) {
   const {publicKey,signMessage,signTransaction}=useWallet();
+  const {setVisible}=useWalletModal();
   const [status,setStatus]=useState<{enabled:boolean;reason:string;initialBuyEnabled?:boolean}|null>(preview?{enabled:false,reason:"Open the app to review and launch your token."}:null);
   const [prepared,setPrepared]=useState<{mint:string;transaction:string;initialBuyLamports:string;maximumBuyLamports:string;tokenAmount:string;estimatedDebitLamports:string|null;creatorRecipient:string}|null>(null);
   const [busy,setBusy]=useState(false),[error,setError]=useState(''),[success,setSuccess]=useState('');
@@ -106,7 +107,7 @@ export function LaunchModal({open,onOpenChange,preview=false}:{open:boolean;onOp
     <label>Initial buy in SOL {status?.initialBuyEnabled?'(optional)':'(not enabled — buy after launch)'}<input name="initialBuySol" readOnly={!status?.initialBuyEnabled} title={!status?.initialBuyEnabled?'Launch first, then buy on Pump.fun. Initial buys are not enabled yet.':undefined} inputMode="decimal" pattern="[0-9]{1,3}(\.[0-9]{1,9})?" defaultValue="0" required/></label>
     <div className="launch-info"><span>Network <b>Solana mainnet</b></span><span>Creator fees <b>Your connected wallet</b></span></div>
     <p className="secure-note">{CREATOR_FEE_DISCLOSURE} {address&&<a href={`https://solscan.io/account/${address}`} target="_blank" rel="noreferrer">View recipient ↗</a>}</p>
-    {!publicKey?<WalletMultiButton/>:<button className="button primary full" disabled={busy||!status?.enabled}>{busy?<LoaderCircle className="spin" size={18}/>:<ArrowUpRight size={18}/>} {busy?'Preparing your launch…':'Review launch'}</button>}
+    {!publicKey?<button type="button" className="button primary full launch-action" onClick={()=>setVisible(true)}><Wallet size={18}/> Connect wallet</button>:<button type="submit" className="button primary full launch-action" disabled={busy||!status?.enabled}>{busy?<LoaderCircle className="spin" size={18}/>:<ArrowUpRight size={18}/>} {busy?'Preparing your launch…':'Review launch'}</button>}
     {(status?.enabled||status?.reason!=='The live indexer is catching up. Try again shortly.')&&<p className="secure-note">{status?.enabled?'Your wallet pays network and creation costs. No added HAUS launch fee.':status?.reason||'Checking launch readiness…'}</p>}{error&&<p role="alert" className="error-message">{error}</p>}
     </form>}
   </Dialog>;

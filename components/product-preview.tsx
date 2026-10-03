@@ -5,6 +5,8 @@ import {usePreviewCoin} from './use-preview-coin';
 import {templates} from '@/lib/site-design';
 import {SitePreview} from './site-preview';
 import './product-preview.css';
+import {PanelSkeleton} from './ui/skeleton';
+import {loadingCoin} from '@/lib/loading-coin';
 import {WalkthroughPreview} from './walkthrough-preview';
 
 type View='launch'|'enter'|'explore'|'overview'|'website'|'proposals';
@@ -34,7 +36,8 @@ function EmbeddedProductPreview({view,focused=false}:{view:View;focused?:boolean
   return()=>{resize.disconnect();observer.disconnect();window.removeEventListener('resize',update);};
  },[focused]);
  return <div className={`product-preview ${focused?'product-preview-focused':''}`} ref={ref}>
-  <div className="product-preview-screen" style={focused?{height:available}:undefined} inert>
+  <div className="product-preview-screen loading-frame" style={focused?{height:available}:undefined} inert>
+   {!loaded[displayed]&&<div className="frame-skeleton"><PanelSkeleton label="Loading app preview" rows={8}/></div>}
    {visible&&visited.map(scene=>{
     const narrow=focused&&(scene==='launch'||scene==='enter');
     const width=narrow?540:focused?900:1200;
@@ -54,7 +57,7 @@ function EmbeddedProductPreview({view,focused=false}:{view:View;focused?:boolean
 
 /** Use the exact export renderer and template definitions from the website editor. */
 export function TemplatePreview(){
- const coin=usePreviewCoin();return coin?<LiveTemplatePreview key={coin.mint} coin={coin}/>:null;
+ const coin=usePreviewCoin();return <div className="loading-frame" data-loading={!coin} aria-busy={!coin}>{!coin&&<div className="frame-skeleton"><PanelSkeleton label="Loading website preview" rows={8}/></div>}<LiveTemplatePreview key={coin?.mint||'loading'} coin={coin||loadingCoin()}/></div>;
 }
 function LiveTemplatePreview({coin}:{coin:Coin}){
  const [design,setDesign]=useState(()=>initialDesign(coin));

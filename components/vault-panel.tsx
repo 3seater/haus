@@ -5,6 +5,7 @@ import {Transaction} from '@solana/web3.js';
 import {api} from '@/lib/client';
 import type {PublicVault,PublicRound} from '@/lib/vault-types';
 import {WalletMultiButton} from './wallet-button';
+import {PanelSkeleton,SkeletonValue} from './ui/skeleton';
 const sol=(lamports:string)=>`${(Number(lamports)/1e9).toLocaleString(undefined,{maximumFractionDigits:9})} SOL`;
 const percent=(part:bigint,total:bigint)=>total>0n?`${Number(part*10000n/total)/100}%`:'0%';
 const choices=['Keep in vault','Holder rewards','Developer claim'];
@@ -29,9 +30,9 @@ export function VaultPanel({mint}:{mint:string}){
  }
  return <section aria-label="Community fee vault"><div className="haus-tool-heading"><div><h2>Fees & rewards</h2><p>Creator fees collect here. Holders decide how each allocation is used.</p></div></div>
  <p className="haus-footnote">HAUS initially controls emergency pauses, upgrades, and the holder snapshot service. The token developer has no default withdrawal access. Buyback and burn is not available in this release.</p>
- <p className="haus-footnote" style={{overflowWrap:'anywhere'}}>HAUS owner: {data?.ownerAuthority??'Not configured'}</p>
- {error&&<p role="alert">{error}</p>}
- {!data&&!error&&<p>Checking vault…</p>}
+ <p className="haus-footnote" style={{overflowWrap:'anywhere'}}>HAUS owner: <SkeletonValue loading={!data&&!error} width="100%">{data?.ownerAuthority??'Not configured'}</SkeletonValue></p>
+ <div className="vault-results" aria-busy={!data&&!error}>{error&&<p role="alert">{error}</p>}
+ {!data&&!error&&<PanelSkeleton label="Loading fee vault" rows={6}/>}
  {data&&!data.enabled&&<div className="haus-empty"><h3>Vault unavailable</h3><p>{data.reason}</p><p>No rewards or voting results are simulated.</p></div>}
  {data?.enabled&&<><p><strong>Unallocated fees: {sol(data.balance??'0')}</strong></p><a className="text-button" href={`https://solscan.io/account/${data.address}`} target="_blank" rel="noreferrer">View vault</a>
  {!wallet&&<WalletMultiButton/>}
@@ -48,7 +49,7 @@ export function VaultPanel({mint}:{mint:string}){
  </article>)}
  <div style={{display:'flex',gap:12}}>{before&&<button className="button secondary" onClick={()=>setBefore(undefined)}>Latest rounds</button>}{data.nextBefore&&<button className="button secondary" onClick={()=>setBefore(data.nextBefore)}>Older rounds</button>}</div>
  </>}
- {data?.enabled&&<p className="haus-footnote">Voting and claims require wallet approval and network fees. A first vote or holder claim also creates an on-chain receipt with a rent cost; very small rewards may cost more to claim than they pay.</p>}
+ {data?.enabled&&<p className="haus-footnote">Voting and claims require wallet approval and network fees. A first vote or holder claim also creates an on-chain receipt with a rent cost; very small rewards may cost more to claim than they pay.</p>}</div>
  {signature&&<p><a href={`https://solscan.io/tx/${signature}`} target="_blank" rel="noreferrer">View submitted transaction</a>{busy?' · Waiting for finalization…':''}</p>}
  </section>;
 }

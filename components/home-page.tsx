@@ -3,6 +3,7 @@ import {useEffect,useRef,useState} from 'react';
 import {ArrowUpRight,ArrowRight,Plus,Menu,X,Wallet} from 'lucide-react';
 import {HausMark} from './haus-mark';
 import {ThemeToggle} from './theme-toggle';
+import type {Coin} from '@/lib/haus-data';
 import {HeroStats} from './hero-stats';
 import {CtaField} from './cta-field';
 import './home-page.css';
@@ -16,7 +17,7 @@ const questions=[
  ['Can I launch a token today?','Open the app to check launch availability, enter your token details and review the transaction in your wallet. Creator rewards go to the wallet launching the token. You need SOL for creation and network costs.'],
  ['Is HAUS a trading platform?','HAUS helps you discover tokens and follow their markets. Trading links take you to external services such as Pump.fun. Tokens can lose value; holding one does not guarantee rewards.'],
 ];
-export function HomePage({appUrl,docsUrl='/docs'}:{appUrl:string;docsUrl?:string}){
+export function HomePage({appUrl,docsUrl='/docs',initialCoins=null}:{appUrl:string;docsUrl?:string;initialCoins?:Coin[]|null}){
  const [menu,setMenu]=useState(false);
  const pageRef=useRef<HTMLDivElement>(null);
  useEffect(()=>{
@@ -32,7 +33,7 @@ export function HomePage({appUrl,docsUrl='/docs'}:{appUrl:string;docsUrl?:string
  <main id="home-main">
  <section className="home-hero-section"><CtaField/><div className="home-hero home-wrap">
   <div className="home-hero-copy"><h1>EVERY COIN<br/><span className="hero-second-line">NEEDS A <span className="hero-haus-word">Haus.</span></span></h1><p>A coin brings people together.<br/>Give them somewhere to build.</p><div className="home-actions"><a className="button dark" href={appUrl}>Build your haus <ArrowUpRight size={18}/></a><a className="home-text-link" href="#how">Meet HAUS <ArrowRight size={16}/></a></div><div className="home-hero-note"><svg viewBox="0 0 32 26" width="20" height="17" fill="currentColor" aria-hidden="true"><path d="M6 1h25l-5 5H1zM1 10h25l5 5H6zM6 19h25l-5 5H1z"/></svg>Built on Solana</div></div>
-  <HeroStats appUrl={appUrl}/>
+  <HeroStats initialCoins={initialCoins} appUrl={appUrl}/>
  </div></section>
  <ScrollWalkthrough/><ScrollType/>
  <section id="vault" className="home-vault"><div className="home-wrap home-vault-grid"><div><h2>THE VAULT</h2><p>Planned for HAUS launches: creator fees collect in a dedicated vault for each token. Launching a coin alone does not give its creator withdrawal rights.</p><p>Holders would vote on how to use those funds. Until a vote approves an allocation, fees stay in the vault.</p><p>Current launches send creator rewards to the wallet launching the token. Vault routing is a future feature and will not automatically change existing launches.</p><a className="home-text-link" href={docsUrl}>Read the vault roadmap <ArrowUpRight size={17}/></a></div><div className="home-vault-plan"><div className="home-vault-source"><Wallet size={23}/><span>Creator rewards</span><ArrowRight size={18}/><b>Token vault</b></div><div className="home-vault-options">{[['01','Keep in the vault'],['02','Holder SOL claims'],['03','Creator allocation'],['04','Buy back & burn']].map(([n,label])=><div key={n}><span>{n}</span><b>{label}</b><ArrowUpRight size={16}/></div>)}</div><p>Planned voting outcomes. Vault automation and buybacks are not live. Voting rules are still being finalized.</p></div></div></section>

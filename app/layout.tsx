@@ -9,6 +9,7 @@ import './shape.css';
 import './entry.css';
 import './theme.css';
 import './wordmark.css';
+import './skeleton.css';
 import {cookies} from 'next/headers';
 import {accessCookie,validAccess} from '@/lib/site-access';
 import {SiteEntry} from '@/components/site-entry';

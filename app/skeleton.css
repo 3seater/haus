@@ -1,0 +1,70 @@
+/* One effect, shared by every pending surface. Geometry belongs to the real UI. */
+.skeleton{display:inline-block;flex-shrink:0;position:relative;overflow:hidden;vertical-align:middle;border-radius:4px;background:color-mix(in srgb,var(--muted) 18%,var(--paper));color:transparent;isolation:isolate}
+.skeleton:after{content:'';position:absolute;inset:0;background:linear-gradient(100deg,transparent 15%,color-mix(in srgb,var(--paper) 75%,transparent) 50%,transparent 85%);transform:translateX(-100%);animation:haus-skeleton 1.6s ease-in-out infinite}
+@keyframes haus-skeleton{to{transform:translateX(100%)}}
+@media(prefers-reduced-motion:reduce){.skeleton:after{animation:none;transform:none;opacity:.3}}
+.skeleton-value{display:inline-block;max-width:100%;min-height:1em;line-height:inherit;white-space:nowrap;vertical-align:baseline;font-variant-numeric:tabular-nums}
+.panel-skeleton{display:flex;flex-direction:column;align-items:flex-start;gap:20px;padding:24px;width:100%;height:100%;box-sizing:border-box}
+.loading-frame{position:relative;overflow:hidden}
+.loading-frame>.frame-skeleton{position:absolute;inset:0;z-index:2;background:var(--paper)}
+.loading-frame[data-loading=true]>:not(.frame-skeleton){visibility:hidden}
+/* Stable public-data viewports: empty/error/data states occupy the same box. */
+.hero-launches-list{height:198px;overflow:auto;scrollbar-gutter:stable}
+.hero-launch-row{min-height:60px;box-sizing:border-box}
+.hero-launch-empty{height:198px;min-height:0}
+.hero-stats dd{height:1em;overflow:hidden;white-space:nowrap}
+.token-ticker{min-height:45px}
+.token-ticker-group button{width:260px;flex:none;box-sizing:border-box}
+.token-ticker-group strong{width:7ch;overflow:hidden;text-overflow:ellipsis;flex:none}
+.ticker-price{width:9ch;flex:none;text-align:left}
+.ticker-change{width:8ch;flex:none;text-align:left}
+.ticker-skeleton{display:flex;align-items:center;gap:28px;width:100%;padding:0 24px;overflow:hidden}
+.token-heading h1{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.token-heading>div{flex:1;min-width:0}
+.token-heading h1>span{display:inline}
+.token-heading h1>.skeleton-value{font:inherit;color:inherit;margin:0;vertical-align:baseline}
+.token-heading h1>.skeleton-value>span:not(.skeleton){font-family:var(--sans);font-size:11px;color:var(--muted);vertical-align:middle;margin-left:12px;white-space:nowrap}
+.token-art-image{display:block;position:relative;overflow:hidden;aspect-ratio:1}
+.token-art-image>img{display:block;width:100%;height:100%;object-fit:inherit}
+.token-art-image>.token-art-skeleton{position:absolute;inset:0;border-radius:inherit}
+.market-stats b>.skeleton-value,.haus-market-peek b>.skeleton-value{font:inherit;color:inherit;letter-spacing:inherit}
+.studio-preview-frame{display:block;position:absolute;inset:0;width:100%;height:100%;border:0}
+.asset-image-frame{height:160px;position:relative;overflow:hidden}
+.asset-image-frame>.skeleton{position:absolute;inset:0}
+.token-live-price>b>.skeleton-value{width:13ch!important}
+.explore-loading{height:400px}
+.explore-results{height:clamp(420px,calc(100dvh - 300px),900px);overflow:auto;scrollbar-gutter:stable}
+.explore-results>.empty-state{height:100%;box-sizing:border-box}
+.community-round{height:154px;overflow:auto;box-sizing:border-box}
+.launch-form>.secure-note:last-of-type{min-height:3em}
+.coin-marketcap b,.market-stats b,.token-live-price>b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-height:1.25em}
+.market-notice-slot{height:32px;overflow:auto}
+.market-notice-slot>.market-error{margin:0;min-height:24px}
+.market-table-scroll{height:360px;max-height:none;overflow:auto;scrollbar-gutter:stable}
+.market-tables table{table-layout:fixed;width:100%}
+.market-tables td{height:48px;box-sizing:border-box;overflow:hidden;text-overflow:ellipsis}
+.market-tables .table-empty{height:300px}
+.market-tables .table-caption-slot{height:28px}
+.native-chart-stage{height:495px;position:relative}
+.chart-skeleton{position:absolute;inset:0;padding:24px;display:flex;flex-direction:column;gap:28px}
+.chart-skeleton>.skeleton:last-child{flex:1}
+.candle-readout{height:34px;box-sizing:border-box;overflow:hidden;white-space:nowrap}
+.community-results{height:390px;overflow:auto;scrollbar-gutter:stable}
+.community-results>.haus-empty{height:100%;min-height:0}
+.community-assets-results{height:330px;overflow:auto;scrollbar-gutter:stable}
+.vault-results{height:480px;overflow:auto;scrollbar-gutter:stable}
+.vault-results>.haus-empty{height:100%;min-height:0}
+.haus-market-notice{height:30px;overflow:auto}
+.haus-market-notice>.haus-footnote{margin:0}
+.haus-tool-grid p{min-height:1.6em}
+.wallet-ui-slot{display:inline-block;width:150px;flex-shrink:0}
+.wallet-ui-slot .wallet-adapter-dropdown,.wallet-ui-slot .wallet-adapter-button{width:100%;justify-content:center;overflow:hidden;white-space:nowrap}
+.docs-scroll{scrollbar-gutter:stable}
+.docs-hydrating{position:relative}
+.docs-hydrating>.docs-reading-layout{visibility:hidden}
+.docs-loading-overlay{position:absolute;inset:0;min-height:100%;padding:48px;pointer-events:none}
+.draft-viewport{height:100dvh;overflow:auto;scrollbar-gutter:stable}
+.my-hauses-results{height:420px;overflow:auto;scrollbar-gutter:stable}
+.my-hauses-results>.empty-state{height:100%;box-sizing:border-box}
+@media(max-width:650px){.wallet-ui-slot{width:124px}.market-notice-slot{height:44px}.docs-loading-overlay{padding:24px}.market-table-scroll{height:320px}.community-results{height:390px}.token-live-price{flex:0 0 100%}.token-actions{width:100%}}
+@media(max-width:700px){.community-round{height:220px}}

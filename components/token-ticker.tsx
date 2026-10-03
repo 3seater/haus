@@ -4,10 +4,11 @@
 import type {MarketCoin} from '@/lib/market-data';
 import {money} from '@/lib/token-display';
 import {TokenArt} from './token-art';
+import {Skeleton} from './ui/skeleton';
 
-export function TokenTicker({coins,onSelect}:{coins:MarketCoin[];onSelect:(coin:MarketCoin)=>void}){
+export function TokenTicker({coins,onSelect,loading=false}:{coins:MarketCoin[];onSelect:(coin:MarketCoin)=>void;loading?:boolean}){
 
- if(!coins.length)return null;
+ if(!coins.length)return <section className="token-ticker" aria-label={loading?'Loading token ticker':'Token ticker'} aria-busy={loading}>{loading&&<div className="ticker-skeleton">{Array.from({length:6},(_,i)=><Skeleton key={i} width="180px" height="14px"/>)}</div>}</section>;
  const items=Array.from({length:Math.max(1,Math.ceil(24/coins.length))},()=>coins).flat();
  return <section className="token-ticker" aria-label="Token market ticker">
   <div className="token-ticker-window"><div className="token-ticker-track" style={{animationDuration:`${items.length*4}s`}}>

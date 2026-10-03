@@ -7,6 +7,7 @@ import { VersionedTransaction } from '@solana/web3.js';
 import { ArrowUpRight, ImagePlus, LoaderCircle, Check, Wallet } from 'lucide-react';
 import { Dialog } from './ui/dialog';
 import {CREATOR_FEE_DISCLOSURE} from '@/lib/launch-policy';
+import {Skeleton} from './ui/skeleton';
 import { api } from '@/lib/client';
 
 function LaunchImageField() {
@@ -108,7 +109,7 @@ export function LaunchModal({open,onOpenChange,preview=false}:{open:boolean;onOp
     <div className="launch-info"><span>Network <b>Solana mainnet</b></span><span>Creator fees <b>Your connected wallet</b></span></div>
     <p className="secure-note">{CREATOR_FEE_DISCLOSURE} {address&&<a href={`https://solscan.io/account/${address}`} target="_blank" rel="noreferrer">View recipient ↗</a>}</p>
     {!publicKey?<button type="button" className="button primary full launch-action" onClick={()=>setVisible(true)}><Wallet size={18}/> Connect wallet</button>:<button type="submit" className="button primary full launch-action" disabled={busy||!status?.enabled}>{busy?<LoaderCircle className="spin" size={18}/>:<ArrowUpRight size={18}/>} {busy?'Preparing your launch…':'Review launch'}</button>}
-    {(status?.enabled||status?.reason!=='The live indexer is catching up. Try again shortly.')&&<p className="secure-note">{status?.enabled?'Your wallet pays network and creation costs. No added HAUS launch fee.':status?.reason||'Checking launch readiness…'}</p>}{error&&<p role="alert" className="error-message">{error}</p>}
+    {(status?.enabled||status?.reason!=='The live indexer is catching up. Try again shortly.')&&<p className="secure-note">{status?.enabled?'Your wallet pays network and creation costs. No added HAUS launch fee.':status?.reason||<Skeleton width="90%" height="1em"/>}</p>}{error&&<p role="alert" className="error-message">{error}</p>}
     </form>}
   </Dialog>;
 }

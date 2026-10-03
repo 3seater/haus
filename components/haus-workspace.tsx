@@ -19,13 +19,14 @@ import {MarketChart} from './market-chart';
 import {MarketTables} from './market-tables';
 import {VaultPanel} from './vault-panel';
 import {Dialog} from './ui/dialog';
+import {PanelSkeleton,SkeletonValue} from './ui/skeleton';
 
 const tabs=[{id:'overview',label:'Overview',icon:LayoutDashboard},{id:'website',label:'Website',icon:Monitor},{id:'vault',label:'Fees & rewards',icon:Wallet},{id:'dex',label:'DEX tools',icon:Sparkles},{id:'proposals',label:'Pitches',icon:Vote},{id:'assets',label:'Assets',icon:ImageIcon},{id:'chart',label:'Chart',icon:ChartNoAxesCombined}] as const;
 type Tab=typeof tabs[number]['id'];
 type Session={token:string;wallet:string;mint:string;expires:number};
 const short=(wallet:string)=>`${wallet.slice(0,4)}…${wallet.slice(-4)}`;
 
-export function HausWorkspace({coin,initialTab='overview',draft,onSave,onBack,initialVerifyOpen=false,previewRoom}:{previewRoom?:HausRoom;initialVerifyOpen?:boolean;coin:MarketCoin;initialTab?:Tab;draft?:SiteDesign;onSave:(design:SiteDesign)=>void;onBack:()=>void}){
+export function HausWorkspace({coin,initialTab='overview',draft,onSave,onBack,initialVerifyOpen=false,previewRoom,loadingCoin=false,marketLoading=false}:{loadingCoin?:boolean;marketLoading?:boolean;previewRoom?:HausRoom;initialVerifyOpen?:boolean;coin:MarketCoin;initialTab?:Tab;draft?:SiteDesign;onSave:(design:SiteDesign)=>void;onBack:()=>void}){
  const [tab,setTab]=useState<Tab>(initialTab),[design,setDesign]=useState<SiteDesign>(draft||initialDesign(coin));
  const [room,setRoom]=useState<HausRoom>(previewRoom||emptyRoom()),[loading,setLoading]=useState(!previewRoom),[feedError,setFeedError]=useState('');
  const [text,setText]=useState(''),[notice,setNotice]=useState(''),[sending,setSending]=useState(false),[pitching,setPitching]=useState(false);
@@ -42,18 +43,23 @@ export function HausWorkspace({coin,initialTab='overview',draft,onSave,onBack,in
  useEffect(()=>{setStudioPreview(process.env.NODE_ENV==='development'&&process.env.NEXT_PUBLIC_STUDIO_PREVIEW_BYPASS==='true'&&['localhost','127.0.0.1','[::1]'].includes(location.hostname));},[]);
  const chatList=useRef<HTMLDivElement>(null),nearBottom=useRef(true);
  const requestVersion=useRef(0);
+ const identityWasPending=useRef(loadingCoin);
+ useEffect(()=>{
+  if(identityWasPending.current&&!loadingCoin)setDesign(draft||initialDesign(coin));
+  identityWasPending.current=loadingCoin;
+ },[loadingCoin,coin,draft]);
 
  useEffect(()=>{if(previewRoom)return;const desired=new URLSearchParams(location.search).get('tab');setTab(tabs.some(t=>t.id===desired)?desired as Tab:initialTab);},[initialTab,previewRoom]);
  useEffect(()=>{setSession(null);setVerifyError('');if(wallet&&connecting){setVerifyOpen(true);setConnecting(false);}},[wallet,connecting]);
  useEffect(()=>{if(!session)return;const timer=setTimeout(()=>setSession(null),Math.max(0,session.expires-Date.now()));return()=>clearTimeout(timer);},[session]);
  useEffect(()=>{if(!notice)return;const timer=setTimeout(()=>setNotice(''),5000);return()=>clearTimeout(timer);},[notice]);
  useEffect(()=>{
-  if(previewRoom)return;
+  if(previewRoom||loadingCoin)return;
   let stopped=false;const controller=new AbortController();
   async function load(){const version=++requestVersion.current;try{const response=await fetch(`/api/haus?mint=${coin.mint}`,{cache:'no-store',signal:controller.signal});const data=await response.json();if(!response.ok)throw new Error(data.error||'Room unavailable.');if(!stopped&&version===requestVersion.current){setRoom(data);setFeedError('');}}catch(error){if(!stopped)setFeedError(error instanceof Error?error.message:'Room unavailable.');}finally{if(!stopped)setLoading(false);}}
   void load();const timer=setInterval(()=>{if(document.visibilityState==='visible')void load();},6000);
   return()=>{stopped=true;controller.abort();clearInterval(timer);};
- },[coin.mint,previewRoom]);
+ },[coin.mint,previewRoom,loadingCoin]);
  useEffect(()=>{if(nearBottom.current&&chatList.current)chatList.current.scrollTop=chatList.current.scrollHeight;},[room.messages.length,chatSize]);
 
  function selectTab(next:Tab){setTab(next);const url=new URL(location.href);url.searchParams.set('view','community');url.searchParams.set('tab',next);history.replaceState({},'',url);}
@@ -75,16 +81,16 @@ export function HausWorkspace({coin,initialTab='overview',draft,onSave,onBack,in
  async function copy(value:string){try{await navigator.clipboard.writeText(value);setNotice('Copied.');}catch{setNotice('Clipboard unavailable.');}}
  function save(){studioGate(()=>{try{onSave(design);setNotice('Draft saved on this device.');}catch{setNotice('Could not save. Export HTML to keep your work.');}});}
 
- return <section className={`haus-workspace chat-${chatSize}`}>
+ return <section className={`haus-workspace chat-${chatSize}`} aria-busy={loadingCoin} inert={loadingCoin||undefined}>
   <button className="back-link" onClick={onBack}><ArrowLeft size={14}/> Back to coin</button>
-  <header className="haus-heading"><TokenIdentity coin={coin} onCopy={()=>void copy(coin.mint)}/><div className="haus-membership">{studioPreview&&tab==='website'?<span className="haus-status verified"><Check size={14}/>Studio preview unlocked</span>:<><span className={active?'haus-status verified':'haus-status'}>{active?<ShieldCheck size={14}/>:<Globe size={14}/>} {active?'Verified holder':'Browsing as a guest'}</span><button className={`button ${active?'secondary':'dark'}`} onClick={()=>setVerifyOpen(true)}>{active?<><Check size={15}/>{short(wallet)}</>:<><Wallet size={15}/>Verify holdings</>}</button></>}</div></header>
+  <header className="haus-heading"><TokenIdentity loading={loadingCoin} coin={coin} onCopy={()=>void copy(coin.mint)}/><div className="haus-membership">{studioPreview&&tab==='website'?<span className="haus-status verified"><Check size={14}/>Studio preview unlocked</span>:<><span className={active?'haus-status verified':'haus-status'}>{active?<ShieldCheck size={14}/>:<Globe size={14}/>} {active?'Verified holder':'Browsing as a guest'}</span><button className={`button ${active?'secondary':'dark'}`} onClick={()=>setVerifyOpen(true)}>{active?<><Check size={15}/>{short(wallet)}</>:<><Wallet size={15}/>Verify holdings</>}</button></>}</div></header>
   <div className="haus-grid"><div className="haus-tools">
    <nav className="haus-tabs" aria-label="Haus tools">{tabs.map(t=><button key={t.id} className={tab===t.id?'active':''} aria-current={tab===t.id?'page':undefined} onClick={()=>selectTab(t.id)}><t.icon size={16}/>{t.label}</button>)}</nav>
    <div className="haus-tool-content">
    {tab==='overview'&&<>
     <div className="haus-welcome"><div><h2>THE HOLDERS<br/>ARE THE DEVS.</h2><button className="button dark" onClick={()=>selectTab('website')}>Build its home <ArrowUpRight size={17}/></button></div><div className="haus-welcome-art" aria-hidden="true"><HausMark/><span>BUILT<br/>BY US.</span></div></div>
-    <div className="haus-tool-grid"><button onClick={()=>selectTab('website')}><Monitor/><ArrowUpRight className="tool-arrow"/><h3>Website studio</h3></button><button onClick={()=>selectTab('dex')}><Sparkles/><ArrowUpRight className="tool-arrow"/><h3>DEX tools</h3></button><button onClick={()=>selectTab('proposals')}><Vote/><ArrowUpRight className="tool-arrow"/><h3>Community pitches</h3><p>{room.pitches.length} website {room.pitches.length===1?'pitch':'pitches'} from holders.</p></button><button onClick={()=>selectTab('assets')}><ImageIcon/><ArrowUpRight className="tool-arrow"/><h3>Brand assets</h3></button></div>
-    {coin.marketStatus!=='current'&&<p className="haus-footnote" role="status">{coin.marketStatus==='stale'?'Delayed quote · last updated '+new Date(coin.updatedAt!).toLocaleTimeString():'Market data is not available yet.'}</p>}<div className="haus-market-peek"><div><span>MARKET CAP</span><b>{money(coin.cap)}</b></div><div><span>24H VOLUME</span><b>{money(coin.volume)}</b></div><button className="text-button" onClick={()=>selectTab('chart')}>Open chart <ArrowUpRight size={15}/></button></div>
+    <div className="haus-tool-grid"><button onClick={()=>selectTab('website')}><Monitor/><ArrowUpRight className="tool-arrow"/><h3>Website studio</h3></button><button onClick={()=>selectTab('dex')}><Sparkles/><ArrowUpRight className="tool-arrow"/><h3>DEX tools</h3></button><button onClick={()=>selectTab('proposals')}><Vote/><ArrowUpRight className="tool-arrow"/><h3>Community pitches</h3><p><SkeletonValue loading={loading} width="100%">{room.pitches.length} website {room.pitches.length===1?'pitch':'pitches'} from holders.</SkeletonValue></p></button><button onClick={()=>selectTab('assets')}><ImageIcon/><ArrowUpRight className="tool-arrow"/><h3>Brand assets</h3></button></div>
+    <div className="haus-market-notice">{!marketLoading&&coin.marketStatus!=='current'&&<p className="haus-footnote" role="status">{coin.marketStatus==='stale'?'Delayed quote · last updated '+new Date(coin.updatedAt!).toLocaleTimeString():'Market data is not available yet.'}</p>}</div><div className="haus-market-peek"><div><span>MARKET CAP</span><b><SkeletonValue loading={marketLoading}>{money(coin.cap)}</SkeletonValue></b></div><div><span>24H VOLUME</span><b><SkeletonValue loading={marketLoading}>{money(coin.volume)}</SkeletonValue></b></div><button className="text-button" onClick={()=>selectTab('chart')}>Open chart <ArrowUpRight size={15}/></button></div>
    </>}
    {tab==='website'&&<>
     <div className="haus-tool-heading"><div><h2>Website studio</h2></div><button className="button secondary" onClick={download}><Download size={14}/>Export HTML</button></div>
@@ -102,12 +108,12 @@ export function HausWorkspace({coin,initialTab='overview',draft,onSave,onBack,in
     <div className="haus-tool-heading"><div><h2>Brand assets</h2></div><ImageIcon size={25}/></div><div className="haus-assets"><div className="haus-asset-art"><TokenArt coin={coin}/><a className="button secondary" href={coin.imageUrl} target="_blank" rel="noreferrer">Open artwork <ArrowUpRight size={14}/></a></div><div className="haus-asset-info"><label>NAME<b>{coin.name}</b></label><label>TICKER<b>${coin.ticker}</b></label><label>CONTRACT<span>{coin.mint}</span><button className="text-button" onClick={()=>void copy(coin.mint)}><Copy size={13}/>Copy address</button></label></div></div><CommunityAssets coin={coin} room={room} loading={loading} error={feedError} onUpload={uploadAsset}/>
    </>}
    {tab==='vault'&&<VaultPanel mint={coin.mint}/>}
-   {tab==='chart'&&<><div className="haus-tool-heading"><div><h2>The market</h2></div><a className="button secondary" href={`https://pump.fun/coin/${coin.mint}`} target="_blank" rel="noreferrer">Trade <ArrowUpRight size={14}/></a></div><MarketChart coin={coin}/><MarketTables coin={coin}/></>}
+   {tab==='chart'&&<><div className="haus-tool-heading"><div><h2>The market</h2></div><a className="button secondary" href={`https://pump.fun/coin/${coin.mint}`} target="_blank" rel="noreferrer">Trade <ArrowUpRight size={14}/></a></div><MarketChart pending={marketLoading} coin={coin}/><MarketTables pending={marketLoading} coin={coin}/></>}
    </div>
   </div>
   <aside className="haus-room" aria-label="Team chat"><header className="haus-room-header"><div><MessageCircle size={18}/><h2>Team chat</h2></div><div className="haus-room-buttons"><button className="icon-button" aria-label={chatSize==='expanded'?'Restore chat size':'Expand chat'} onClick={()=>setChatSize(chatSize==='expanded'?'normal':'expanded')}><ChevronUp size={18}/></button><button className="icon-button" aria-label={chatSize==='collapsed'?'Open chat':'Minimize chat'} onClick={()=>setChatSize(chatSize==='collapsed'?'normal':'collapsed')}><ChevronDown size={18}/></button></div></header>
    <div className="haus-room-body"><div className="haus-messages" ref={chatList} aria-live="polite" aria-relevant="additions" onScroll={()=>{const e=chatList.current!;nearBottom.current=e.scrollHeight-e.scrollTop-e.clientHeight<60;}}>
-   {feedError?<div className="haus-chat-empty" role="alert"><p>{feedError}</p></div>:loading?<div className="haus-chat-empty">Loading messages…</div>:!room.messages.length?<div className="haus-chat-empty"><p>No messages yet.</p></div>:room.messages.map(m=><article className={`haus-message ${m.wallet===wallet?'own':''}`} key={m.id}><header><span className="haus-avatar">{m.wallet.slice(0,2)}</span><b title={m.wallet}>{short(m.wallet)}{m.wallet===wallet?' · you':''}</b><time dateTime={m.createdAt}>{new Date(m.createdAt).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</time></header><p>{m.text}</p></article>)}
+   {feedError?<div className="haus-chat-empty" role="alert"><p>{feedError}</p></div>:loading?<PanelSkeleton label="Loading messages" rows={5}/>:!room.messages.length?<div className="haus-chat-empty"><p>No messages yet.</p></div>:room.messages.map(m=><article className={`haus-message ${m.wallet===wallet?'own':''}`} key={m.id}><header><span className="haus-avatar">{m.wallet.slice(0,2)}</span><b title={m.wallet}>{short(m.wallet)}{m.wallet===wallet?' · you':''}</b><time dateTime={m.createdAt}>{new Date(m.createdAt).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</time></header><p>{m.text}</p></article>)}
    </div><div className="haus-composer">{active?<><form onSubmit={e=>{e.preventDefault();void send();}}><textarea aria-label="Message the Haus" placeholder="Write a message…" value={text} maxLength={1000} rows={2} onChange={e=>setText(e.target.value)} onKeyDown={e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.nativeEvent.isComposing){e.preventDefault();void send();}}}/><button aria-label="Send message" disabled={sending||!text.trim()}><Send size={17}/></button></form></>:<><button className="button dark full" onClick={()=>setVerifyOpen(true)}><LockKeyhole size={14}/>Verify to chat</button></>}</div></div>
   </aside></div>
   {notice&&<div className="haus-notice" role="status">{notice}<button onClick={()=>setNotice('')} aria-label="Dismiss message">×</button></div>}

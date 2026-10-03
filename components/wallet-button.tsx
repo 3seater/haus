@@ -1,4 +1,5 @@
 'use client';
+import {Skeleton} from './ui/skeleton';
 import { useEffect, useState } from 'react';
 import { WalletMultiButton as AdapterWalletMultiButton } from '@solana/wallet-adapter-react-ui';
 
@@ -11,10 +12,10 @@ export function useWalletUiReady() {
 }
 
 export function WalletButtonPlaceholder() {
-  return <button type="button" className="wallet-adapter-button wallet-adapter-button-trigger" disabled aria-busy="true">Select Wallet</button>;
+  return <button type="button" className="wallet-adapter-button wallet-adapter-button-trigger" disabled aria-busy="true" aria-label="Loading wallet"><Skeleton width="90px" height="12px"/></button>;
 }
 
 export function WalletMultiButton() {
   const ready = useWalletUiReady();
-  return ready ? <AdapterWalletMultiButton/> : <WalletButtonPlaceholder/>;
+  return <span className="wallet-ui-slot">{ready ? <AdapterWalletMultiButton/> : <WalletButtonPlaceholder/>}</span>;
 }

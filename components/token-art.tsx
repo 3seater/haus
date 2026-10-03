@@ -1,5 +1,6 @@
 import {useEffect,useId,useState} from 'react';
 import {tokenImageSources} from '@/lib/token-image';
+import {Skeleton} from './ui/skeleton';
 import type {Coin} from '@/lib/haus-data';
 export function TokenArt({coin,className=''}:{coin:Coin;className?:string}){
  const id=useId().replaceAll(':','');
@@ -7,8 +8,10 @@ export function TokenArt({coin,className=''}:{coin:Coin;className?:string}){
  const index=attempt.url===coin.imageUrl?attempt.index:0;
  const sources=coin.imageUrl?tokenImageSources(coin.imageUrl):[];
  const src=sources[index];
+ const [loaded,setLoaded]=useState<string|null>(null);
+ useEffect(()=>{if(!src||loaded===src)return;const timer=setTimeout(()=>setAttempt({url:coin.imageUrl,index:index+1}),8000);return()=>clearTimeout(timer);},[src,loaded,index,coin.imageUrl]);
  useEffect(()=>{if(!coin.imageUrl||src)return;const timer=setTimeout(()=>setAttempt({url:coin.imageUrl,index:0}),30000);return()=>clearTimeout(timer);},[coin.imageUrl,src,index]);
- if(src)return <img key={src} className={`token-art ${className}`} src={src} alt={`${coin.name} artwork`} referrerPolicy="no-referrer" onError={()=>setAttempt({url:coin.imageUrl,index:index+1})}/>;
+ if(src)return <span className={`token-art token-art-image ${className}`} aria-busy={loaded!==src}>{loaded!==src&&<Skeleton className="token-art-skeleton" height="100%"/>}<img key={src} src={src} alt={`${coin.name} artwork`} referrerPolicy="no-referrer" style={{opacity:loaded===src?1:0}} ref={el=>{if(el?.complete&&el.naturalWidth)setLoaded(src);}} onLoad={()=>setLoaded(src)} onError={()=>setAttempt({url:coin.imageUrl,index:index+1})}/></span>;
  if(coin.art==='image')return <div className={`token-art token-art-fallback ${className}`} role="img" aria-label={`${coin.name} artwork unavailable`} style={{background:coin.color}}><span>{coin.ticker.slice(0,4)}</span></div>;
  return <svg className={`token-art ${className}`} viewBox="0 0 240 220" preserveAspectRatio="xMidYMid slice" role="img" aria-label={`${coin.name} artwork`}>
  <defs><radialGradient id={id}><stop stopColor={coin.color}/><stop offset="1" stopColor={coin.bg}/></radialGradient><filter id={`${id}shadow`}><feDropShadow dx="0" dy="8" stdDeviation="6" floodOpacity=".22"/></filter><linearGradient id={`${id}shine`} x2="1" y2="1"><stop stopColor="white" stopOpacity=".9"/><stop offset=".45" stopColor={coin.color}/><stop offset="1" stopColor={coin.bg}/></linearGradient></defs>

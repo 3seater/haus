@@ -4,7 +4,7 @@ import { useWallet } from '@solana/wallet-adapter-react';
 import bs58 from 'bs58';
 import { useWalletModal } from '@solana/wallet-adapter-react-ui';
 import { VersionedTransaction } from '@solana/web3.js';
-import { ArrowUpRight, ImagePlus, LoaderCircle, CheckCircle2, Wallet } from 'lucide-react';
+import { ArrowUpRight, ImagePlus, LoaderCircle, Check, Wallet } from 'lucide-react';
 import { Dialog } from './ui/dialog';
 import {CREATOR_FEE_DISCLOSURE} from '@/lib/launch-policy';
 import { api } from '@/lib/client';
@@ -101,7 +101,7 @@ export function LaunchModal({open,onOpenChange,preview=false}:{open:boolean;onOp
     {!pending&&prepared&&Number(prepared.initialBuyLamports)>0&&<p className="secure-note">Initial-buy limit: {Number(prepared.maximumBuyLamports)/1e9} SOL, including 1% slippage tolerance. Network fees and account rent are separate.</p>}<button className="button primary full" onClick={confirm} disabled={busy}>{busy?<LoaderCircle className="spin" size={18}/>:<ArrowUpRight size={18}/>} {busy?'Checking your launch…':'Approve launch in wallet'}</button>{!pending&&<button className="text-button" disabled={busy} onClick={()=>setPrepared(null)}>Back to details</button>}{error&&<p role="alert" className="error-message">{error}</p>}</div>
   </Dialog>;
   return <Dialog inline={preview} className="launch-modal" open={open} onOpenChange={value=>{if(!busy)onOpenChange(value);}} title="Create token" description="Launch on Pump.fun. Your holders build its home.">
-    {success?<div className="launch-success launch-complete"><CheckCircle2 size={48}/><h3>Your token is live.</h3><div className="launch-success-actions"><a className="button dark" href={`/app?coin=${success}&view=community`}>Enter your Haus <ArrowUpRight size={18}/></a><a className="button primary" href={`https://pump.fun/coin/${success}`} target="_blank" rel="noreferrer">View Token <ArrowUpRight size={18}/></a></div></div>:<form onSubmit={submit} className="launch-form">
+    {success?<div className="launch-success launch-complete"><span className="launch-success-mark" aria-hidden="true"><Check size={30} strokeWidth={3}/></span><h3>YOUR TOKEN IS LIVE.</h3><div className="launch-success-actions"><a className="button dark" href={`/app?coin=${success}&view=community`}>Enter your Haus <ArrowUpRight size={18}/></a><a className="button primary" href={`https://pump.fun/coin/${success}`} target="_blank" rel="noreferrer">View Token <ArrowUpRight size={18}/></a></div></div>:<form onSubmit={submit} className="launch-form">
     <div className="form-row"><label>Token name<input name="name" placeholder="HAUS" maxLength={32} required/></label><label>Ticker<input name="symbol" placeholder="TICKER" pattern="[A-Za-z0-9]{1,10}" maxLength={10} required/></label></div><label>The story<textarea name="description" placeholder="A short description of the token" maxLength={500} required rows={3}/></label>
     <LaunchImageField/>
     <label>Initial buy in SOL {status?.initialBuyEnabled?'(optional)':'(not enabled — buy after launch)'}<input name="initialBuySol" readOnly={!status?.initialBuyEnabled} title={!status?.initialBuyEnabled?'Launch first, then buy on Pump.fun. Initial buys are not enabled yet.':undefined} inputMode="decimal" pattern="[0-9]{1,3}(\.[0-9]{1,9})?" defaultValue="0" required/></label>

@@ -1,9 +1,14 @@
-import {useId,useState} from 'react';
+import {useEffect,useId,useState} from 'react';
+import {tokenImageSources} from '@/lib/token-image';
 import type {Coin} from '@/lib/haus-data';
 export function TokenArt({coin,className=''}:{coin:Coin;className?:string}){
  const id=useId().replaceAll(':','');
- const [failed,setFailed]=useState<string|null>(null);
- if(coin.imageUrl&&failed!==coin.imageUrl)return <img className={`token-art ${className}`} src={coin.imageUrl} alt={`${coin.name} artwork`} referrerPolicy="no-referrer" ref={element=>{if(element?.complete&&!element.naturalWidth)setFailed(coin.imageUrl);}} onError={()=>setFailed(coin.imageUrl)}/>;
+ const [attempt,setAttempt]=useState({url:coin.imageUrl,index:0});
+ const index=attempt.url===coin.imageUrl?attempt.index:0;
+ const sources=coin.imageUrl?tokenImageSources(coin.imageUrl):[];
+ const src=sources[index];
+ useEffect(()=>{if(!coin.imageUrl||src)return;const timer=setTimeout(()=>setAttempt({url:coin.imageUrl,index:0}),30000);return()=>clearTimeout(timer);},[coin.imageUrl,src,index]);
+ if(src)return <img key={src} className={`token-art ${className}`} src={src} alt={`${coin.name} artwork`} referrerPolicy="no-referrer" onError={()=>setAttempt({url:coin.imageUrl,index:index+1})}/>;
  if(coin.art==='image')return <div className={`token-art token-art-fallback ${className}`} role="img" aria-label={`${coin.name} artwork unavailable`} style={{background:coin.color}}><span>{coin.ticker.slice(0,4)}</span></div>;
  return <svg className={`token-art ${className}`} viewBox="0 0 240 220" preserveAspectRatio="xMidYMid slice" role="img" aria-label={`${coin.name} artwork`}>
  <defs><radialGradient id={id}><stop stopColor={coin.color}/><stop offset="1" stopColor={coin.bg}/></radialGradient><filter id={`${id}shadow`}><feDropShadow dx="0" dy="8" stdDeviation="6" floodOpacity=".22"/></filter><linearGradient id={`${id}shine`} x2="1" y2="1"><stop stopColor="white" stopOpacity=".9"/><stop offset=".45" stopColor={coin.color}/><stop offset="1" stopColor={coin.bg}/></linearGradient></defs>

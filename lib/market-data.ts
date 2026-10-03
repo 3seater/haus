@@ -10,11 +10,11 @@ export function emptyMarket(coin:Coin):MarketCoin{return {...coin,cap:null,chang
 export function normalizeMarket(coin:Coin,pair:DexPair|null,updatedAt:string):MarketCoin{
  const base=emptyMarket(coin);if(!pair)return base;
  const links=(items:{label?:string;type?:string;url:string}[]=[])=>items.flatMap(item=>{const url=safeWebUrl(item.url);return url?[{label:item.label||item.type||'Website',url}]:[];});
- return {...base,cap:finite(pair.marketCap),price:pair.priceUsd!==undefined?finite(Number(pair.priceUsd)):null,change:finite(pair.priceChange?.h24),volume:finite(pair.volume?.h24),liquidity:finite(pair.liquidity?.usd),pairAddress:pair.pairAddress,marketUrl:`https://dexscreener.com/solana/${pair.pairAddress}`,imageUrl:pair.info?.imageUrl&&safeWebUrl(pair.info.imageUrl)||coin.imageUrl,websites:links(pair.info?.websites),socials:links(pair.info?.socials),updatedAt,marketStatus:'current'};
+ return {...base,cap:finite(pair.marketCap),price:pair.priceUsd!==undefined?finite(Number(pair.priceUsd)):null,change:finite(pair.priceChange?.h24),volume:finite(pair.volume?.h24),liquidity:finite(pair.liquidity?.usd),pairAddress:pair.pairAddress,marketUrl:`https://dexscreener.com/solana/${pair.pairAddress}`,imageUrl:coin.imageUrl||pair.info?.imageUrl&&safeWebUrl(pair.info.imageUrl)||coin.imageUrl,websites:links(pair.info?.websites),socials:links(pair.info?.socials),updatedAt,marketStatus:'current'};
 }
 
 // Last-known values are only usable briefly, and never masquerade as a fresh quote.
 export function staleMarket(coin:Coin,previous:MarketCoin|null,now=Date.now()):MarketCoin{
- if(previous?.mint===coin.mint&&previous.updatedAt&&now-Date.parse(previous.updatedAt)<=15*60000)return {...previous,marketStatus:'stale'};
+ if(previous?.mint===coin.mint&&previous.updatedAt&&now-Date.parse(previous.updatedAt)<=60000)return {...previous,imageUrl:coin.imageUrl||previous.imageUrl,marketStatus:'stale'};
  return emptyMarket(coin);
 }

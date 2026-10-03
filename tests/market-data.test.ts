@@ -31,4 +31,9 @@ test('Provider failures preserve only recent genuine quotes, labelled stale with
  const now=Date.now(),previous=normalizeMarket(coin,pair,new Date(now-1000).toISOString());
  const stale=staleMarket(coin,previous,now);assert.equal(stale.cap,previous.cap);assert.equal(stale.updatedAt,previous.updatedAt);assert.equal(stale.marketStatus,'stale');
  assert.equal(staleMarket(coin,previous,now+16*60000).price,null);assert.equal(staleMarket(coins[1],previous,now).price,null);
+ assert.equal(staleMarket(coin,previous,now+60000).price,null);
+});
+test('Indexed artwork cannot overwrite the token launch artwork',()=>{
+ const registered={...coin,imageUrl:'https://example.com/original.png'};
+ assert.equal(normalizeMarket(registered,{...pair,info:{imageUrl:'https://example.com/other.png'}},new Date().toISOString()).imageUrl,registered.imageUrl);
 });

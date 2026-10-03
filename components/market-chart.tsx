@@ -2,6 +2,7 @@
 import {useEffect,useRef,useState} from 'react';
 import {TradingChart} from './trading-chart';
 import {Skeleton} from './ui/skeleton';
+import {HISTORY_POLL_MS} from '@/lib/market-refresh';
 import type {MarketCoin} from '@/lib/market-data';
 import {formatPrice,intervals,type Interval,type Candle} from '@/lib/chart-data';
 export function MarketChart({coin,pending=false}:{coin:MarketCoin;pending?:boolean}){
@@ -9,9 +10,9 @@ export function MarketChart({coin,pending=false}:{coin:MarketCoin;pending?:boole
  const historyCache=useRef(new Map<string,{candles:Candle[];loaded:number}>());
  useEffect(()=>{
   const key=coin.mint+':'+coin.pairAddress+':'+interval;const previous=historyCache.current.get(key);setCandles(previous?.candles||[]);setHover(null);setLoading(true);setError('');if(!coin.pairAddress){setLoading(pending);return;}
-  const controller=new AbortController();let cancelled=false;
-  async function load(){try{const r=await fetch('/api/market-history?mint='+coin.mint+'&pool='+coin.pairAddress+'&interval='+interval,{signal:controller.signal});const d=await r.json();if(!r.ok)throw new Error(d.error||'Chart data unavailable.');if(!cancelled){setCandles(d.candles);setError(d.stale?'Refresh unavailable · showing previously loaded candles':'');historyCache.current.set(key,{candles:d.candles,loaded:d.stale?0:Date.now()});}}catch(e){if(!cancelled)setError(e instanceof Error?e.message:'Chart data unavailable.');}finally{if(!cancelled)setLoading(false);}}
-  if(previous&&Date.now()-previous.loaded<60000&&revision===0)setLoading(false);else void load();const timer=window.setInterval(()=>{if(document.visibilityState==='visible')void load();},60000);return()=>{cancelled=true;controller.abort();clearInterval(timer);};
+  const controller=new AbortController();let cancelled=false,inFlight=false;
+  async function load(){if(inFlight||cancelled)return;inFlight=true;try{const r=await fetch('/api/market-history?mint='+coin.mint+'&pool='+coin.pairAddress+'&interval='+interval,{signal:controller.signal,cache:'no-store'});const d=await r.json();if(!r.ok)throw new Error(d.error||'Chart data unavailable.');if(!cancelled){setCandles(d.candles);setError(d.stale?'Refresh unavailable · showing previously loaded candles':'');historyCache.current.set(key,{candles:d.candles,loaded:d.stale?0:Date.now()});}}catch(e){if(!cancelled)setError(e instanceof Error?e.message:'Chart data unavailable.');}finally{inFlight=false;if(!cancelled)setLoading(false);}}
+  if(previous&&Date.now()-previous.loaded<HISTORY_POLL_MS&&revision===0)setLoading(false);else void load();const refresh=()=>{if(document.visibilityState==='visible')void load();};const timer=window.setInterval(refresh,HISTORY_POLL_MS);document.addEventListener('visibilitychange',refresh);return()=>{cancelled=true;controller.abort();clearInterval(timer);document.removeEventListener('visibilitychange',refresh);};
  },[coin.mint,coin.pairAddress,interval,revision,pending]);
  const active=candles[hover??candles.length-1];
  return <section className="market-chart native-chart"><header><div className="chart-name"><span className="chart-live-dot"/>CHART <span className="chart-currency">USD</span></div><div className="chart-intervals" aria-label="Chart interval">{Object.keys(intervals).map(t=><button key={t} className={interval===t?'active':''} aria-pressed={interval===t} onClick={()=>setIntervalValue(t as Interval)}>{t}</button>)}</div></header>

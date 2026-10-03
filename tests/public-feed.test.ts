@@ -10,3 +10,17 @@ test('History cache retains timestamped data on a provider failure and marks it 
 test('An uncached failure is not replaced with invented data',async()=>{
  await assert.rejects(cachedFeed('missing-test',100,async()=>{throw new Error('unavailable');},true),/unavailable/);
 });
+
+test('History cache refreshes after its freshness budget and deduplicates simultaneous readers',async()=>{
+ const {HISTORY_CACHE_MS}=await import('../lib/market-refresh');
+ const now=Date.now;let clock=now();Date.now=()=>clock;
+ try{
+  let reads=0;const read=async()=>({revision:++reads});
+  const first=await cachedFeed('history-freshness-test',HISTORY_CACHE_MS,read);
+  clock+=HISTORY_CACHE_MS-1;
+  assert.deepEqual(await cachedFeed('history-freshness-test',HISTORY_CACHE_MS,read),first);
+  clock+=1;
+  const results=await Promise.all([cachedFeed('history-freshness-test',HISTORY_CACHE_MS,read),cachedFeed('history-freshness-test',HISTORY_CACHE_MS,read)]);
+  assert.equal(reads,2);assert.deepEqual(results,[{revision:2},{revision:2}]);
+ }finally{Date.now=now;}
+});

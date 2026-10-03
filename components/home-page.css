@@ -23,4 +23,4 @@
 @media(max-width:800px){.home-tools.home-tools-compact{gap:30px;padding-block:45px}}
 @media(max-width:600px){.home-tools.home-tools-compact{grid-template-columns:1fr;gap:25px;padding-block:40px}.home-tools-copy p{max-width:none}.home-tools-compact .home-tools-copy h2{font-size:46px;margin-bottom:16px}.home-tools-compact .product-template-preview .studio-preview{height:300px}}
 
-.home-footer nav{flex-wrap:wrap}.footer-ca{overflow-wrap:anywhere}
+.home-footer nav{flex-wrap:wrap}

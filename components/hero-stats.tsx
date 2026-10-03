@@ -24,12 +24,12 @@ export function HeroStats({appUrl,initialCoins=null}:{appUrl:string;initialCoins
   return()=>{stopped=true;controller.abort();clearInterval(timer);document.removeEventListener('visibilitychange',resume);};
  },[]);
  return <section className="hero-launches" aria-labelledby="recent-launches-title">
-  <HomeMarketStats/><div className="hero-launches-heading"><h2 id="recent-launches-title">JUST MOVED IN.</h2><span className={error?'launch-feed-status paused':'launch-feed-status'}><i/>{error?'Reconnecting':'Recent launches'}</span></div>
+  <HomeMarketStats/><div className="hero-launches-heading"><h2 id="recent-launches-title">JUST MOVED IN.</h2></div>
   <div className="hero-launches-list" aria-live="polite" aria-relevant="additions removals">
    {!coins&&!error?Array.from({length:3},(_,i)=><div className="hero-launch-row" key={i} aria-hidden="true"><Skeleton className="token-art" width={40} height={40}/><span className="hero-launch-name"><Skeleton width="60%" height="14px"/><Skeleton width="35%" height="10px"/></span><Skeleton width="70px" height="12px"/></div>):coins?.length?coins.map(coin=><a className="hero-launch-row" key={coin.mint} href={`${appUrl}${appUrl.includes('?')?'&':'?'}coin=${encodeURIComponent(coin.mint)}&view=community`}>
     <TokenArt coin={coin}/><span className="hero-launch-name"><strong>{coin.name}</strong><span>${coin.ticker}</span></span><span className="hero-launch-label">Enter haus</span><ArrowUpRight size={18}/>
    </a>):<div className="hero-launch-empty"><strong>{error?'The door is still open.':coins?'Be the first to move in.':'Opening the doors…'}</strong><p>{error?'We’re reconnecting to recent launches.':coins?'New launches will appear here. Yours could be next.':'Finding the latest launches on HAUS.'}</p>{coins&&!error&&<a href={appUrl}>Launch your token <ArrowUpRight size={15}/></a>}</div>}
   </div>
-  <a className="hero-launches-all" href={appUrl}>Explore all tokens <ArrowUpRight size={14}/></a>
+  <a className="button secondary hero-launches-all" href={appUrl}>Explore all tokens <ArrowUpRight size={14}/></a>
  </section>;
 }

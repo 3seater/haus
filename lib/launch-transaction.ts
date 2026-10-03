@@ -3,7 +3,7 @@ const LIGHTHOUSE=new PublicKey('L2TExMFKdjpN9kozasaurPirfHy9P8sbXoAN1qA3S95');
 function sameInstruction(a:TransactionInstruction,b:TransactionInstruction){
   return a.programId.equals(b.programId)&&a.data.equals(b.data)&&a.keys.length===b.keys.length&&a.keys.every((key,i)=>key.pubkey.equals(b.keys[i].pubkey)&&key.isSigner===b.keys[i].isSigner&&key.isWritable===b.keys[i].isWritable);
 }
-function verifyWalletAdditions(tx:Transaction,message:string){
+export function verifyWalletAdditions(tx:Transaction,message:string){
   const originalMessage=Message.from(Buffer.from(message,'base64'));
   const original=Transaction.populate(originalMessage),signed=tx.compileMessage();
   if(!tx.feePayer?.equals(original.feePayer!)||tx.recentBlockhash!==original.recentBlockhash)throw new Error('Launch payer or blockhash changed');

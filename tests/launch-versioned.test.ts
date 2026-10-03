@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {AddressLookupTableAccount,ComputeBudgetProgram,Keypair,SystemProgram,VersionedTransaction} from '@solana/web3.js';
+import {AddressLookupTableAccount,ComputeBudgetProgram,Keypair,PublicKey,SystemProgram,TransactionInstruction,VersionedTransaction} from '@solana/web3.js';
 import {PUMP_SDK,type Global} from '@pump-fun/pump-sdk';
 import {BN} from '@coral-xyz/anchor';
 import {buildVersionedLaunch,verifyVersionedLaunch} from '../lib/launch-versioned';
@@ -8,6 +8,43 @@ import {launchLookupAddresses} from '../lib/launch-lookup-plan';
 import {initializeVaultInstruction,vaultAddress} from '../lib/vault-addresses';
 import {launchIntent} from '../lib/launch-access';
 const pub=()=>Keypair.generate().publicKey;
+test('Versioned launches allow bounded wallet additions but reject altered launch contents',()=>{
+ const payer=Keypair.generate(),mint=Keypair.generate(),blockhash=pub().toBase58();
+ const create=(lamports=1)=>SystemProgram.createAccount({fromPubkey:payer.publicKey,newAccountPubkey:mint.publicKey,lamports,space:0,programId:SystemProgram.programId});
+ const limit=ComputeBudgetProgram.setComputeUnitLimit({units:500000});
+ const original=buildVersionedLaunch(payer.publicKey,blockhash,[limit,create()]);
+ const prepared=Buffer.from(original.message.serialize()).toString('base64');
+ const assertion=()=>new TransactionInstruction({programId:new PublicKey('L2TExMFKdjpN9kozasaurPirfHy9P8sbXoAN1qA3S95'),keys:[{pubkey:payer.publicKey,isSigner:true,isWritable:true}],data:Buffer.from([6,0,0])});
+ const additions=()=>[limit,ComputeBudgetProgram.setComputeUnitPrice({microLamports:1000}),create(),assertion()];
+ const encode=(instructions:TransactionInstruction[],hash=blockhash,sign=true)=>{
+  const tx=buildVersionedLaunch(payer.publicKey,hash,instructions);
+  if(sign)tx.sign([payer]);
+  return Buffer.from(tx.serialize()).toString('base64');
+ };
+ const approved=encode(additions());
+ const signed=verifyVersionedLaunch(approved,prepared,mint);
+ assert.deepEqual(signed.message.serialize(),VersionedTransaction.deserialize(Buffer.from(approved,'base64')).message.serialize());
+ assert.ok(signed.signatures[1].some(byte=>byte!==0));
+ const changed=additions();changed[2]=create(2);
+ assert.throws(()=>verifyVersionedLaunch(encode(changed),prepared,mint));
+ assert.throws(()=>verifyVersionedLaunch(encode([...additions(),SystemProgram.transfer({fromPubkey:payer.publicKey,toPubkey:pub(),lamports:1})]),prepared,mint));
+ const highFee=additions();highFee[1]=ComputeBudgetProgram.setComputeUnitPrice({microLamports:1_000_000_000});
+ assert.throws(()=>verifyVersionedLaunch(encode(highFee),prepared,mint));
+ const write=additions();write[3].data=Buffer.from([0,0,0]);
+ assert.throws(()=>verifyVersionedLaunch(encode(write),prepared,mint));
+ const privilege=additions();privilege[3].keys.push({pubkey:pub(),isSigner:false,isWritable:true});
+ assert.throws(()=>verifyVersionedLaunch(encode(privilege),prepared,mint));
+ assert.throws(()=>verifyVersionedLaunch(encode(additions(),pub().toBase58()),prepared,mint));
+ assert.throws(()=>verifyVersionedLaunch(encode(additions(),blockhash,false),prepared,mint));
+ assert.throws(()=>verifyVersionedLaunch(approved,prepared,Keypair.generate()));
+ const lookupAddress=pub();
+ const lookup=new AddressLookupTableAccount({key:pub(),state:{deactivationSlot:18446744073709551615n,lastExtendedSlot:1,lastExtendedSlotStartIndex:0,addresses:[lookupAddress]}});
+ // A lookup-bearing message must never enter the no-lookup compatibility path.
+ const withLookup=buildVersionedLaunch(payer.publicKey,blockhash,[limit,create(),new TransactionInstruction({programId:pub(),keys:[{pubkey:lookupAddress,isSigner:false,isWritable:false}],data:Buffer.alloc(0)})],lookup);
+ assert.ok(withLookup.message.addressTableLookups.length);
+ withLookup.sign([payer]);
+ assert.throws(()=>verifyVersionedLaunch(Buffer.from(withLookup.serialize()).toString('base64'),prepared,mint));
+});
 test('Maximum metadata and initial buy fit an atomic launch using shared lookup addresses',async()=>{
  const program=pub(),global={feeRecipient:pub(),feeRecipients:[pub(),pub()]} as Global;
  const lookup=new AddressLookupTableAccount({key:pub(),state:{deactivationSlot:18446744073709551615n,lastExtendedSlot:1,lastExtendedSlotStartIndex:0,addresses:await launchLookupAddresses(program,global)}});

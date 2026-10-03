@@ -9,6 +9,7 @@ import {encrypt} from './crypto';
 import {decodeVault,vaultAddress} from './vault-addresses';
 import {buildVersionedLaunch} from './launch-versioned';
 import {launchLookupTable} from './launch-lookup';
+import {launchSimulationFailure} from './launch-simulation';
 export async function createLaunch(user: string, name: string, symbol: string, uri: string,initialBuySol='0') {
   const creator=new PublicKey(user);
   if(Buffer.byteLength(uri,'utf8')>200)throw new HttpError(409,'Metadata provider returned an unsupported URI length. No transaction was created.');
@@ -32,7 +33,11 @@ export async function createLaunch(user: string, name: string, symbol: string, u
   // The mint signer stays encrypted server-side until the wallet approves the exact message.
   const mintSignerEncrypted=encrypt(Array.from(mint.secretKey));
   const simulation=await rpc().simulateTransaction(transaction,{sigVerify:false,commitment:'confirmed',accounts:{encoding:'base64',addresses:[user]}});
-  if(simulation.value.err)throw new HttpError(409,'Launch simulation failed. Check that your wallet has enough SOL for creation, rent and your initial buy. No funds were spent.');
+  if(simulation.value.err){
+    const reason=launchSimulationFailure(simulation.value);
+    console.error(JSON.stringify({event:'launch_simulation_rejected',reason}));
+    throw new HttpError(409,reason);
+  }
   const [balance,fee]=await Promise.all([rpc().getBalance(new PublicKey(user),'confirmed'),rpc().getFeeForMessage(transaction.message,'confirmed')]);
   const after=simulation.value.accounts?.[0]?.lamports;
   return {mint:mint.publicKey.toBase58(),mintSignerEncrypted,transaction:Buffer.from(transaction.serialize()).toString('base64'),initialBuyLamports:solAmount.toString(),maximumBuyLamports:solAmount.add(solAmount.divn(100)).toString(),tokenAmount:amount.toString(),estimatedDebitLamports:after===undefined||after===null?null:Math.max(0,balance-after).toString(),networkFeeLamports:fee.value?.toString()??null,creatorRecipient:args.creator.toBase58(),...block};

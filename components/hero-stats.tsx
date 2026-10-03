@@ -3,6 +3,7 @@ import {useEffect,useState} from 'react';
 import {ArrowUpRight} from 'lucide-react';
 import type {Coin} from '@/lib/haus-data';
 import {TokenArt} from './token-art';
+import {HomeMarketStats} from './home-market-stats';
 import './hero-stats.css';
 
 export function HeroStats({appUrl}:{appUrl:string}){
@@ -22,7 +23,7 @@ export function HeroStats({appUrl}:{appUrl:string}){
   return()=>{stopped=true;controller.abort();clearInterval(timer);document.removeEventListener('visibilitychange',resume);};
  },[]);
  return <section className="hero-launches" aria-labelledby="recent-launches-title">
-  <div className="hero-launches-heading"><h2 id="recent-launches-title">JUST MOVED IN.</h2><span className={error?'launch-feed-status paused':'launch-feed-status'}><i/>{error?'Reconnecting':'Recent launches'}</span></div>
+  <HomeMarketStats/><div className="hero-launches-heading"><h2 id="recent-launches-title">JUST MOVED IN.</h2><span className={error?'launch-feed-status paused':'launch-feed-status'}><i/>{error?'Reconnecting':'Recent launches'}</span></div>
   <div className="hero-launches-list" aria-live="polite" aria-relevant="additions removals">
    {coins?.length?coins.map(coin=><a className="hero-launch-row" key={coin.mint} href={`${appUrl}${appUrl.includes('?')?'&':'?'}coin=${encodeURIComponent(coin.mint)}&view=community`}>
     <TokenArt coin={coin}/><span className="hero-launch-name"><strong>{coin.name}</strong><span>${coin.ticker}</span></span><span className="hero-launch-label">Enter haus</span><ArrowUpRight size={18}/>

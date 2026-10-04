@@ -14,7 +14,7 @@ function same(before,after,label){for(const key of Object.keys(before)){assert.o
 (async()=>{
  const browser=await chromium.launch({headless:true,channel:process.env.PLAYWRIGHT_CHANNEL||"chrome"});fs.mkdirSync('test-results/loading',{recursive:true});
  try{for(const viewport of sizes){
-  const context=await browser.newContext({viewport});await context.addCookies([{name:'haus-site-access',value:'unlocked',url:base}]);
+  const context=await browser.newContext({viewport});
   const page=await context.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));
   await page.route('https://fonts.googleapis.com/**',route=>route.fulfill({contentType:'text/css',body:''}));
   let failing=false;let release;let gate=new Promise(r=>release=r);

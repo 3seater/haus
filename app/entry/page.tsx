@@ -1,5 +1,5 @@
-import {SiteEntry} from '@/components/site-entry';
+import {redirect} from 'next/navigation';
 
 export default function EntryPreviewPage(){
- return <SiteEntry/>;
+ redirect('/');
 }

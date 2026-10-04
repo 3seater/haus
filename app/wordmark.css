@@ -1,9 +1,9 @@
 @font-face{font-family:'HAUS SMEGS';src:url('/fonts/HVSMEGS-Style1.otf') format('opentype');font-weight:400;font-style:normal;font-display:block}
 :root{--wordmark:'HAUS SMEGS',var(--sans)}
-.brand>span,.site-entry-logo>span{font-family:var(--wordmark);font-weight:400;font-synthesis:none;letter-spacing:0;line-height:1.1}
+.brand>span{font-family:var(--wordmark);font-weight:400;font-synthesis:none;letter-spacing:0;line-height:1.1}
 
 
-.site-entry-logo>span{font-size:76px}
+
 header .brand>span,footer .brand>span{font-family:var(--display);font-weight:400;font-synthesis:none;letter-spacing:-.03em;line-height:1;text-transform:uppercase}
 
 
